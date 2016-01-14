@@ -1,7 +1,8 @@
 /**
  * 1.0.0 : release
+ * 1.0.1 : impl Disposable
  */
-def ARTIFACT_VERSION = "1.0.0"
+def ARTIFACT_VERSION = "1.0.1"
 def ARTIFACT_NAME = file(".").absoluteFile.name
 
 buildscript {
@@ -20,8 +21,9 @@ sourceCompatibility = 1.7
 targetCompatibility = 1.7
 
 dependencies {
-    compile 'com.eaglesakura:simple-logger:1.0.0'
-    compile 'com.eaglesakura:simple-utils:1.0.1'
+    compile 'com.eaglesakura:simple-logger:1.0.+'
+    compile 'com.eaglesakura:simple-utils:1.0.+'
+//    compile project(":eglibrary:module-simple-utils")
 }
 
 apply plugin: 'java'

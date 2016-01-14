@@ -12,7 +12,7 @@ import java.io.InputStream;
 /**
  * データ入力を補助するクラス。
  */
-public final class DataInputStream {
+public final class DataInputStream implements Disposable {
     /**
      * 読み取りに使用するリーダー。
      */
@@ -315,6 +315,7 @@ public final class DataInputStream {
      * <br>
      * 必要であれば、内部管理する{@link #reader}のdispose()を行う。
      */
+    @Override
     public void dispose() {
         if (readerClose) {
             if (reader != null) {

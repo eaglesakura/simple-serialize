@@ -9,7 +9,7 @@ import java.io.OutputStream;
  * ライブラリ規定の形式でデータを出力するインターフェース。<BR>
  * このクラスを通して出力したファイルは対になる {@link DataInputStream}で開くことが可能。
  */
-public final class DataOutputStream {
+public final class DataOutputStream implements Disposable {
     /**
      * 入出力。
      */
@@ -32,6 +32,7 @@ public final class DataOutputStream {
     /**
      * リソースの開放を行う。
      */
+    @Override
     public void dispose() {
         if (!writerClose) {
             return;
