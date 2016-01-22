@@ -145,8 +145,6 @@ public final class DataInputStream implements Disposable {
 
     /**
      * write64Arrayした配列を取り出す。
-     *
-     * @throws IOException
      */
     public long[] readS64Array() throws IOException {
         //! 配列数を取り出す
@@ -189,8 +187,6 @@ public final class DataInputStream implements Disposable {
 
     /**
      * IEEE754形式のビット列をfloatに変換し、取得する。
-     *
-     * @throws IOException
      */
     public float readFloat() throws IOException {
         return Float.intBitsToFloat(readS32());
@@ -198,8 +194,6 @@ public final class DataInputStream implements Disposable {
 
     /**
      * IEEE754形式のビット列をdoubleに変換し、取得する。
-     *
-     * @throws IOException
      */
     public double readDouble() throws IOException {
         return Double.longBitsToDouble(readS64());
@@ -209,8 +203,6 @@ public final class DataInputStream implements Disposable {
      * 真偽の値を取得する。
      * <br>
      * 1byte読み取り、0ならfalse、それ以外ならtrueを返す。
-     *
-     * @throws IOException
      */
     public boolean readBoolean() throws IOException {
         return readS8() == 0 ? false : true;

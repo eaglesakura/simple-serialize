@@ -14,9 +14,6 @@ import java.util.Map;
 public class SerializeUtil {
     /**
      * ファイル配列をシリアライズする
-     *
-     * @param data
-     * @return
      */
     public static byte[] toByteArray(List<byte[]> data) {
         try {
@@ -43,9 +40,6 @@ public class SerializeUtil {
 
     /**
      * toByteArrayでシリアライズしたデータをデシリアライズする
-     *
-     * @param buffer
-     * @return
      */
     public static List<byte[]> toByteArrayList(byte[] buffer) {
         return toByteArrayList(buffer, 0, buffer.length);
@@ -53,9 +47,6 @@ public class SerializeUtil {
 
     /**
      * toByteArrayでシリアライズしたデータをデシリアライズする
-     *
-     * @param buffer
-     * @return
      */
     public static List<byte[]> toByteArrayList(byte[] buffer, int offset, int length) {
         try {
@@ -79,9 +70,6 @@ public class SerializeUtil {
 
     /**
      * Key-Valueデータを圧縮する
-     *
-     * @param data
-     * @return
      */
     public static byte[] toByteArray(Map<String, byte[]> data) {
         try {

@@ -143,7 +143,6 @@ public class DataPackage {
      * @param stream          パッキングされたデータ
      * @param streamTimeoutMs データ切断までの猶予時間
      * @return 解答されたデータ
-     * @throws IOException
      */
     public static byte[] unpack(InputStream stream, long streamTimeoutMs) throws IOException, DataFormatException {
         DataInputStream dis = new DataInputStream(stream, false);
