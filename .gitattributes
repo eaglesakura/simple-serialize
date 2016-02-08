@@ -23,7 +23,6 @@ gradlew text=auto
 *.md text eol=lf
 *.txt text eol=lf
 *.pro text eol=lf
-*.yml text eol=lf
 
 # binary
 *.jar binary
