@@ -1,8 +1,9 @@
 /**
  * 1.0.0 : release
  * 1.0.1 : impl Disposable
+ * 1.0.2 : read時の文字コードをUTF8固定に変更
  */
-def ARTIFACT_VERSION = "1.0.1"
+def ARTIFACT_VERSION = "1.0.2"
 def ARTIFACT_NAME = file(".").absoluteFile.name
 def ARTIFACT_INSTALL_TARGET = getArtifactInstallTarget()
 

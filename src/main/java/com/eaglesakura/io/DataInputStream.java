@@ -211,7 +211,7 @@ public final class DataInputStream implements Disposable {
     /**
      * 文字列を読み取る。
      * <br>
-     * エンコードはShiftJISである必要がある。
+     * エンコードはUTF-8である必要がある。
      * <br>
      * 頭2byteが文字数、後に文字配列が続く。
      */
@@ -223,7 +223,7 @@ public final class DataInputStream implements Disposable {
         byte[] buf = new byte[len];
         readBuffer(buf, len);
 
-        return new String(buf, "Shift_JIS");
+        return new String(buf, "UTF-8");
     }
 
     /**
