@@ -1,8 +1,8 @@
 package com.eaglesakura.serialize.internal;
 
 import com.eaglesakura.serialize.Serialize;
-import com.eaglesakura.serialize.SerializeException;
-import com.eaglesakura.serialize.SerializeIdConflictException;
+import com.eaglesakura.serialize.error.SerializeException;
+import com.eaglesakura.serialize.error.SerializeIdConflictException;
 
 import java.lang.reflect.Field;
 import java.util.HashMap;
@@ -17,7 +17,11 @@ public class InternalSerializeUtil {
      * ListがImplされている場合はtrueを返却する
      */
     public static boolean isListInterface(Class<?> clazz) {
-        return clazz.asSubclass(List.class) != null;
+        try {
+            return clazz.asSubclass(List.class) != null;
+        } catch (Exception e) {
+            return false;
+        }
     }
 
     /**
@@ -30,18 +34,19 @@ public class InternalSerializeUtil {
     public static Map<Short, SerializeTargetField> listSerializeFields(Object obj) throws SerializeException {
         Map<Short, SerializeTargetField> result = new HashMap<>();
 
-        for (Field field : obj.getClass().getFields()) {
-            Serialize serialize = field.getAnnotation(Serialize.class);
-            if (serialize != null) {
-                if (result.containsKey(serialize.id())) {
-                    throw new SerializeIdConflictException();
-                }
+        if (obj != null) {
+            for (Field field : obj.getClass().getFields()) {
+                Serialize serialize = field.getAnnotation(Serialize.class);
+                if (serialize != null) {
+                    if (result.containsKey(serialize.id())) {
+                        throw new SerializeIdConflictException();
+                    }
 
-                SerializeTargetField target = new SerializeTargetField(obj, field, serialize);
-                result.put(serialize.id(), target);
+                    SerializeTargetField target = new SerializeTargetField(obj, field, serialize);
+                    result.put(serialize.id(), target);
+                }
             }
         }
-
         return result;
     }
 }

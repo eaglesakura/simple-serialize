@@ -1,4 +1,4 @@
-package com.eaglesakura.serialize;
+package com.eaglesakura.serialize.error;
 
 public class SerializeIdConflictException extends SerializeException {
     public SerializeIdConflictException() {

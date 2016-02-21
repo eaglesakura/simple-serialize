@@ -256,7 +256,7 @@ public final class DataOutputStream implements Disposable {
      * 浮動小数値を書き込む。
      */
     public void writeDouble(double d) throws IOException {
-        writeDouble(Double.doubleToLongBits(d));
+        writeS64(Double.doubleToLongBits(d));
     }
 
     /**

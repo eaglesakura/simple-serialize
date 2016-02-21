@@ -1,4 +1,4 @@
-package com.eaglesakura.serialize;
+package com.eaglesakura.serialize.error;
 
 public class UnsupportedSerializeException extends SerializeException {
     public UnsupportedSerializeException() {
