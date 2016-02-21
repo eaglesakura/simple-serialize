@@ -253,6 +253,13 @@ public final class DataOutputStream implements Disposable {
     }
 
     /**
+     * 浮動小数値を書き込む。
+     */
+    public void writeDouble(double d) throws IOException {
+        writeDouble(Double.doubleToLongBits(d));
+    }
+
+    /**
      * 文字列を書き込む。
      * <br>
      * エンコードはUTF-8として保存する。
