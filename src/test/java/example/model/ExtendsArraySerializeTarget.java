@@ -3,6 +3,7 @@ package example.model;
 import com.eaglesakura.serialize.Serialize;
 import com.eaglesakura.serialize.SerializerTestUtil;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -23,6 +24,9 @@ public class ExtendsArraySerializeTarget extends PrimitiveSerializeTarget {
     @Serialize(id = 5)
     public List<String> nullStrings = null;
 
+    @Serialize(id = 6)
+    public List<String> zeroString = new ArrayList<>();
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -38,7 +42,9 @@ public class ExtendsArraySerializeTarget extends PrimitiveSerializeTarget {
         if (nullPrimitives != null ? !nullPrimitives.equals(that.nullPrimitives) : that.nullPrimitives != null)
             return false;
         if (strings != null ? !strings.equals(that.strings) : that.strings != null) return false;
-        return !(nullStrings != null ? !nullStrings.equals(that.nullStrings) : that.nullStrings != null);
+        if (nullStrings != null ? !nullStrings.equals(that.nullStrings) : that.nullStrings != null)
+            return false;
+        return !(zeroString != null ? !zeroString.equals(that.zeroString) : that.zeroString != null);
 
     }
 
@@ -50,6 +56,7 @@ public class ExtendsArraySerializeTarget extends PrimitiveSerializeTarget {
         result = 31 * result + (nullPrimitives != null ? nullPrimitives.hashCode() : 0);
         result = 31 * result + (strings != null ? strings.hashCode() : 0);
         result = 31 * result + (nullStrings != null ? nullStrings.hashCode() : 0);
+        result = 31 * result + (zeroString != null ? zeroString.hashCode() : 0);
         return result;
     }
 }
