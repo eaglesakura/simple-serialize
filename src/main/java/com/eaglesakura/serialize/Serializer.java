@@ -7,6 +7,7 @@ import com.eaglesakura.serialize.internal.PrimitiveFieldEncoder;
 import com.eaglesakura.serialize.internal.SerializeHeader;
 import com.eaglesakura.serialize.internal.SerializeTargetField;
 import com.eaglesakura.util.LogUtil;
+import com.eaglesakura.util.ReflectionUtil;
 
 import java.io.ByteArrayOutputStream;
 import java.util.Iterator;
@@ -26,7 +27,7 @@ public class Serializer {
     }
 
     public byte[] serialize(Object obj) throws SerialException {
-        if (InternalSerializeUtil.isListInterface(obj.getClass())) {
+        if (ReflectionUtil.isListInterface(obj.getClass())) {
             throw new IllegalArgumentException();
         }
         ByteArrayOutputStream os = new ByteArrayOutputStream();
@@ -47,7 +48,7 @@ public class Serializer {
 
     private void encodeObject(short id, Object obj, DataOutputStream stream) throws Exception {
 
-        if (obj != null && InternalSerializeUtil.isListInterface(obj.getClass())) {
+        if (obj != null && ReflectionUtil.isListInterface(obj.getClass())) {
             // Listならば配列として書き込む
             List array = (List) obj;
             ObjectHeader header = new ObjectHeader(id, ObjectHeader.OBJECT_FLAG_ARRAY, array.size());

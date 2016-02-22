@@ -7,41 +7,33 @@ import com.eaglesakura.serialize.internal.SerializeHeader;
 import com.eaglesakura.serialize.internal.SerializeTargetField;
 import com.eaglesakura.util.LogUtil;
 
-import org.junit.Assert;
 import org.junit.Test;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
 
+import example.model.ExtendsArraySerializeTarget;
 import example.model.NullableSerializeTarget;
 import example.model.ObjPrimitiveSerializeTarget;
 import example.model.PrimitiveSerializeTarget;
 import example.model.RecursiveSerializeTarget;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNotNull;
+
 /**
  *
  */
 public class SerializerTest {
-
-    @Test
-    public void List継承チェック() {
-        Assert.assertFalse(InternalSerializeUtil.isListInterface(Object.class));
-        Assert.assertTrue(InternalSerializeUtil.isListInterface(List.class));
-        Assert.assertTrue(InternalSerializeUtil.isListInterface(ArrayList.class));
-        Assert.assertTrue(InternalSerializeUtil.isListInterface(LinkedList.class));
-    }
-
     @Test
     public void Field列挙() throws Exception {
         PrimitiveSerializeTarget obj = new PrimitiveSerializeTarget();
         Map<Short, SerializeTargetField> fields = InternalSerializeUtil.listSerializeFields(obj);
 
-        Assert.assertNotNull(fields);
-        Assert.assertNotEquals(fields.size(), 0);
+        assertNotNull(fields);
+        assertNotEquals(fields.size(), 0);
     }
 
     @Test
@@ -55,7 +47,7 @@ public class SerializerTest {
         DataInputStream inputStream = new DataInputStream(is, false);
         SerializeHeader readHeader = SerializeHeader.read(inputStream);
 
-        Assert.assertEquals(originHeader, readHeader);
+        assertEquals(originHeader, readHeader);
     }
 
     @Test
@@ -64,14 +56,14 @@ public class SerializerTest {
         target.doubleValue = Math.random();
 
         byte[] bytes = new Serializer().serialize(target);
-        Assert.assertNotNull(bytes);
-        Assert.assertNotEquals(bytes.length, 0);
+        assertNotNull(bytes);
+        assertNotEquals(bytes.length, 0);
 
         LogUtil.log("Primitive Encode(%d bytes)", bytes.length);
 
         PrimitiveSerializeTarget deserialize = new Deserializer().deserialize(PrimitiveSerializeTarget.class, bytes);
 
-        Assert.assertEquals(target, deserialize);
+        assertEquals(target, deserialize);
     }
 
     @Test
@@ -80,14 +72,14 @@ public class SerializerTest {
         target.stringValue += System.currentTimeMillis();
 
         byte[] bytes = new Serializer().serialize(target);
-        Assert.assertNotNull(bytes);
-        Assert.assertNotEquals(bytes.length, 0);
+        assertNotNull(bytes);
+        assertNotEquals(bytes.length, 0);
 
         LogUtil.log("Primitive Encode(%d bytes)", bytes.length);
 
         ObjPrimitiveSerializeTarget deserialize = new Deserializer().deserialize(ObjPrimitiveSerializeTarget.class, bytes);
 
-        Assert.assertEquals(target, deserialize);
+        assertEquals(target, deserialize);
     }
 
     @Test
@@ -96,14 +88,14 @@ public class SerializerTest {
         target.stringValue += System.currentTimeMillis();
 
         byte[] bytes = new Serializer().serialize(target);
-        Assert.assertNotNull(bytes);
-        Assert.assertNotEquals(bytes.length, 0);
+        assertNotNull(bytes);
+        assertNotEquals(bytes.length, 0);
 
         LogUtil.log("Primitive Encode(%d bytes)", bytes.length);
 
         NullableSerializeTarget deserialize = new Deserializer().deserialize(NullableSerializeTarget.class, bytes);
 
-        Assert.assertEquals(target, deserialize);
+        assertEquals(target, deserialize);
     }
 
     @Test
@@ -111,13 +103,28 @@ public class SerializerTest {
         RecursiveSerializeTarget target = new RecursiveSerializeTarget();
 
         byte[] bytes = new Serializer().serialize(target);
-        Assert.assertNotNull(bytes);
-        Assert.assertNotEquals(bytes.length, 0);
+        assertNotNull(bytes);
+        assertNotEquals(bytes.length, 0);
 
         LogUtil.log("Primitive Encode(%d bytes)", bytes.length);
 
         RecursiveSerializeTarget deserialize = new Deserializer().deserialize(RecursiveSerializeTarget.class, bytes);
 
-        Assert.assertEquals(target, deserialize);
+        assertEquals(target, deserialize);
+    }
+
+    @Test
+    public void 配列作成と継承を行ったオブジェクトのシリアライズ() throws Exception {
+        ExtendsArraySerializeTarget target = new ExtendsArraySerializeTarget();
+
+        byte[] bytes = new Serializer().serialize(target);
+        assertNotNull(bytes);
+        assertNotEquals(bytes.length, 0);
+
+        LogUtil.log("Primitive Encode(%d bytes)", bytes.length);
+
+        ExtendsArraySerializeTarget deserialize = new Deserializer().deserialize(ExtendsArraySerializeTarget.class, bytes);
+
+        assertEquals(target, deserialize);
     }
 }

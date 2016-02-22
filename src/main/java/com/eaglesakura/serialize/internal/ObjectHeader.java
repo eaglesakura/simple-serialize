@@ -59,7 +59,7 @@ public class ObjectHeader {
      */
     public final int size;
 
-    public static final short ID_ROOT = (short) 0xFEFE;
+    public static final short ID_ROOT = (short) 0xEFCD;
 
     public ObjectHeader(short id, short flags, int size) {
         this.id = id;

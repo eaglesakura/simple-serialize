@@ -1,12 +1,14 @@
 package com.eaglesakura.serialize;
 
 import com.eaglesakura.io.DataInputStream;
+import com.eaglesakura.serialize.error.CreateObjectFailedException;
 import com.eaglesakura.serialize.error.SerializeException;
 import com.eaglesakura.serialize.internal.InternalSerializeUtil;
 import com.eaglesakura.serialize.internal.ObjectHeader;
 import com.eaglesakura.serialize.internal.SerializeHeader;
 import com.eaglesakura.serialize.internal.SerializeTargetField;
 import com.eaglesakura.util.LogUtil;
+import com.eaglesakura.util.ReflectionUtil;
 
 import java.io.ByteArrayInputStream;
 import java.util.ArrayList;
@@ -47,6 +49,10 @@ public class Deserializer {
         }
 
         T instance = newInstance(clazz);
+        if (instance == null) {
+            throw new CreateObjectFailedException("Failed :: " + clazz.getName());
+        }
+
         Map<Short, SerializeTargetField> fields = InternalSerializeUtil.listSerializeFields(instance);
 
         for (int i = 0; i < header.size; ++i) {
@@ -62,7 +68,7 @@ public class Deserializer {
                     // 配列を読み込む
                     List array = new ArrayList();
                     for (int k = 0; k < valueHeader.size; ++k) {
-                        Object vInstance = deserializeObject(null, field.type, stream);
+                        Object vInstance = deserializeObject(null,  ReflectionUtil.getListGenericClass(field.field), stream);
                         array.add(vInstance);
                     }
                     field.set(array);
