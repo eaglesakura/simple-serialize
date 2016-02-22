@@ -2,6 +2,7 @@ package com.eaglesakura.serialize;
 
 import com.eaglesakura.io.DataInputStream;
 import com.eaglesakura.io.DataOutputStream;
+import com.eaglesakura.serialize.error.SerializeIdConflictException;
 import com.eaglesakura.serialize.internal.InternalSerializeUtil;
 import com.eaglesakura.serialize.internal.SerializeHeader;
 import com.eaglesakura.serialize.internal.SerializeTargetField;
@@ -14,6 +15,7 @@ import java.io.ByteArrayOutputStream;
 import java.util.Map;
 
 import example.model.ExtendsArraySerializeTarget;
+import example.model.IdConflictTarget;
 import example.model.NullableSerializeTarget;
 import example.model.ObjPrimitiveSerializeTarget;
 import example.model.PrimitiveSerializeTarget;
@@ -27,6 +29,7 @@ import static org.junit.Assert.assertNotNull;
  *
  */
 public class SerializerTest {
+
     @Test
     public void Field列挙() throws Exception {
         PrimitiveSerializeTarget obj = new PrimitiveSerializeTarget();
@@ -126,5 +129,10 @@ public class SerializerTest {
         ExtendsArraySerializeTarget deserialize = new Deserializer().deserialize(ExtendsArraySerializeTarget.class, bytes);
 
         assertEquals(target, deserialize);
+    }
+
+    @Test(expected = SerializeIdConflictException.class)
+    public void IDの重複は例外とする() throws Exception {
+        new Serializer().serialize(new IdConflictTarget());
     }
 }
