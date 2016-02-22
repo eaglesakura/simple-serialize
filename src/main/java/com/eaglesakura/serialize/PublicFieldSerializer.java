@@ -15,14 +15,14 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-public class Serializer {
+public class PublicFieldSerializer {
 
     /**
      * プリミティブ型を書き込むためのエンコーダ
      */
     PrimitiveFieldEncoder mPrimitiveFieldEncoder = new PrimitiveFieldEncoder();
 
-    public Serializer() {
+    public PublicFieldSerializer() {
     }
 
     public byte[] serialize(Object obj) throws SerializeException {
