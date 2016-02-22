@@ -19,7 +19,17 @@ public class NullableSerializeTarget {
     public byte[] nullByteArray = null;
 
     @Serialize(id = 4)
-    public byte[] byteArra = SerializerTestUtil.randBytes();
+    public byte[] byteArray = SerializerTestUtil.randBytes();
+
+    @Serialize(id = 5)
+    public byte[] byteLargeArray;
+
+    public NullableSerializeTarget() {
+        byteLargeArray = new byte[1024 * 4];
+        for (int i = 0; i < byteLargeArray.length; ++i) {
+            byteLargeArray[i] = SerializerTestUtil.randInteger();
+        }
+    }
 
     @Override
     public boolean equals(Object o) {
@@ -33,7 +43,7 @@ public class NullableSerializeTarget {
         if (stringValue != null ? !stringValue.equals(that.stringValue) : that.stringValue != null)
             return false;
         if (!Arrays.equals(nullByteArray, that.nullByteArray)) return false;
-        return Arrays.equals(byteArra, that.byteArra);
+        return Arrays.equals(byteArray, that.byteArray);
 
     }
 
@@ -42,7 +52,7 @@ public class NullableSerializeTarget {
         int result = nullStringValue != null ? nullStringValue.hashCode() : 0;
         result = 31 * result + (stringValue != null ? stringValue.hashCode() : 0);
         result = 31 * result + (nullByteArray != null ? Arrays.hashCode(nullByteArray) : 0);
-        result = 31 * result + (byteArra != null ? Arrays.hashCode(byteArra) : 0);
+        result = 31 * result + (byteArray != null ? Arrays.hashCode(byteArray) : 0);
         return result;
     }
 }
