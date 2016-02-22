@@ -2,6 +2,9 @@ package com.eaglesakura.util;
 
 import com.eaglesakura.io.DataInputStream;
 import com.eaglesakura.io.DataOutputStream;
+import com.eaglesakura.serialize.PublicFieldDeserializer;
+import com.eaglesakura.serialize.PublicFieldSerializer;
+import com.eaglesakura.serialize.error.SerializeException;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -119,4 +122,17 @@ public class SerializeUtil {
         }
     }
 
+    /**
+     * Public Fieldに@Serializeアノテーションを付与したオブジェクトをシリアライズする
+     */
+    public static byte[] serializePublicFieldObject(Object obj) throws SerializeException {
+        return new PublicFieldSerializer().serialize(obj);
+    }
+
+    /**
+     * Public Fieldに@Serializeアノテーションを付与したオブジェクトをデシリアライズする
+     */
+    public static <T> T deserializePublicFieldObject(Class<T> clazz, byte[] buffer) throws SerializeException {
+        return new PublicFieldDeserializer().deserialize(clazz, buffer);
+    }
 }
