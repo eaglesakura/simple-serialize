@@ -1,6 +1,7 @@
 package example.model;
 
 import com.eaglesakura.serialize.Serialize;
+import com.eaglesakura.serialize.SerializerTestUtil;
 
 import java.util.Arrays;
 import java.util.List;
@@ -16,6 +17,12 @@ public class ExtendsArraySerializeTarget extends PrimitiveSerializeTarget {
     @Serialize(id = 3)
     public List<PrimitiveSerializeTarget> nullPrimitives = null;
 
+    @Serialize(id = 4)
+    public List<String> strings = Arrays.asList(SerializerTestUtil.randString(), null, SerializerTestUtil.randString(), null, null, SerializerTestUtil.randString());
+
+    @Serialize(id = 5)
+    public List<String> nullStrings = null;
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -28,7 +35,10 @@ public class ExtendsArraySerializeTarget extends PrimitiveSerializeTarget {
             return false;
         if (primitives != null ? !primitives.equals(that.primitives) : that.primitives != null)
             return false;
-        return !(nullPrimitives != null ? !nullPrimitives.equals(that.nullPrimitives) : that.nullPrimitives != null);
+        if (nullPrimitives != null ? !nullPrimitives.equals(that.nullPrimitives) : that.nullPrimitives != null)
+            return false;
+        if (strings != null ? !strings.equals(that.strings) : that.strings != null) return false;
+        return !(nullStrings != null ? !nullStrings.equals(that.nullStrings) : that.nullStrings != null);
 
     }
 
@@ -38,6 +48,8 @@ public class ExtendsArraySerializeTarget extends PrimitiveSerializeTarget {
         result = 31 * result + (recursiveSerializeTarget != null ? recursiveSerializeTarget.hashCode() : 0);
         result = 31 * result + (primitives != null ? primitives.hashCode() : 0);
         result = 31 * result + (nullPrimitives != null ? nullPrimitives.hashCode() : 0);
+        result = 31 * result + (strings != null ? strings.hashCode() : 0);
+        result = 31 * result + (nullStrings != null ? nullStrings.hashCode() : 0);
         return result;
     }
 }

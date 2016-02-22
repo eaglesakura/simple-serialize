@@ -48,6 +48,11 @@ public class PublicFieldDeserializer {
             return null;
         }
 
+        if (clazz.equals(String.class)) {
+            // StringはPrimitiveと同等に扱う
+            return (T) (new String(stream.readBuffer(header.size), ObjectHeader.STRING_CHARSET));
+        }
+
         T instance = newInstance(clazz);
         if (instance == null) {
             throw new CreateObjectFailedException("Failed :: " + clazz.getName());
@@ -68,7 +73,7 @@ public class PublicFieldDeserializer {
                     // 配列を読み込む
                     List array = new ArrayList();
                     for (int k = 0; k < valueHeader.size; ++k) {
-                        Object vInstance = deserializeObject(null,  ReflectionUtil.getListGenericClass(field.field), stream);
+                        Object vInstance = deserializeObject(null, ReflectionUtil.getListGenericClass(field.field), stream);
                         array.add(vInstance);
                     }
                     field.set(array);

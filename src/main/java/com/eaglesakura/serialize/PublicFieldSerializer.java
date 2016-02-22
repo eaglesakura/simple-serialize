@@ -53,12 +53,24 @@ public class PublicFieldSerializer {
             ObjectHeader header = new ObjectHeader(id, ObjectHeader.OBJECT_FLAG_ARRAY, array.size());
             header.write(stream);
             for (Object aObj : array) {
-                encodeObject(id, aObj, stream);
+                if (aObj instanceof String) {
+                    encodeArrayString(id, (String) aObj, stream);
+                } else {
+                    encodeObject(id, aObj, stream);
+                }
             }
         } else {
             // 通常オブジェクトならばそれを書き込む
             encodeSingleObject(id, obj, stream);
         }
+    }
+
+    private void encodeArrayString(short id, String obj, DataOutputStream stream) throws Exception {
+        byte[] buffer = obj.getBytes(ObjectHeader.STRING_CHARSET);
+        // ヘッダを書き込む
+        new ObjectHeader(id, buffer.length > 255 ? ObjectHeader.OBJECT_FLAG_LARGEDATA : 0x00, buffer.length).write(stream);
+        // データを書き込む
+        stream.writeBuffer(buffer, 0, buffer.length);
     }
 
     private void encodeSingleObject(short id, Object obj, DataOutputStream stream) throws Exception {
