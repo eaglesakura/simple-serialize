@@ -48,7 +48,18 @@ public class PrimitiveSerializeTarget {
         if (intValue != that.intValue) return false;
         if (longValue != that.longValue) return false;
         if (Float.compare(that.floatValue, floatValue) != 0) return false;
-        return Double.compare(that.doubleValue, doubleValue) == 0;
+        if (Double.compare(that.doubleValue, doubleValue) != 0) return false;
+        if (ByteValue != null ? !ByteValue.equals(that.ByteValue) : that.ByteValue != null)
+            return false;
+        if (ShortValue != null ? !ShortValue.equals(that.ShortValue) : that.ShortValue != null)
+            return false;
+        if (IntValue != null ? !IntValue.equals(that.IntValue) : that.IntValue != null)
+            return false;
+        if (LongValue != null ? !LongValue.equals(that.LongValue) : that.LongValue != null)
+            return false;
+        if (FloatValue != null ? !FloatValue.equals(that.FloatValue) : that.FloatValue != null)
+            return false;
+        return !(DoubleValue != null ? !DoubleValue.equals(that.DoubleValue) : that.DoubleValue != null);
 
     }
 
@@ -64,6 +75,12 @@ public class PrimitiveSerializeTarget {
         result = 31 * result + (floatValue != +0.0f ? Float.floatToIntBits(floatValue) : 0);
         temp = Double.doubleToLongBits(doubleValue);
         result = 31 * result + (int) (temp ^ (temp >>> 32));
+        result = 31 * result + (ByteValue != null ? ByteValue.hashCode() : 0);
+        result = 31 * result + (ShortValue != null ? ShortValue.hashCode() : 0);
+        result = 31 * result + (IntValue != null ? IntValue.hashCode() : 0);
+        result = 31 * result + (LongValue != null ? LongValue.hashCode() : 0);
+        result = 31 * result + (FloatValue != null ? FloatValue.hashCode() : 0);
+        result = 31 * result + (DoubleValue != null ? DoubleValue.hashCode() : 0);
         return result;
     }
 }

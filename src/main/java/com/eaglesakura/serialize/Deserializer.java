@@ -27,7 +27,7 @@ public class Deserializer {
             SerializeHeader header = SerializeHeader.read(stream);
             LogUtil.log("Magic(%x) Version(%d)", header.magic, header.version);
 
-            return deserializeObject(clazz, stream);
+            return deserializeObject(null, clazz, stream);
         } catch (SerializeException e) {
             throw e;
         } catch (Exception e) {
@@ -36,9 +36,11 @@ public class Deserializer {
         return null;
     }
 
-    private <T> T deserializeObject(Class<T> clazz, DataInputStream stream) throws Exception {
+    private <T> T deserializeObject(ObjectHeader header, Class<T> clazz, DataInputStream stream) throws Exception {
         // Objectを読み込む
-        ObjectHeader header = ObjectHeader.read(stream);
+        if (header == null) {
+            header = ObjectHeader.read(stream);
+        }
         if (header.isNull()) {
             // nullオブジェクトなので何もしない
             return null;
@@ -60,13 +62,13 @@ public class Deserializer {
                     // 配列を読み込む
                     List array = new ArrayList();
                     for (int k = 0; k < valueHeader.size; ++k) {
-                        Object vInstance = deserializeObject(field.type, stream);
+                        Object vInstance = deserializeObject(null, field.type, stream);
                         array.add(vInstance);
                     }
                     field.set(array);
                 } else if (valueHeader.isObject()) {
                     // 再帰的に生成させる
-                    Object fInstance = deserializeObject(field.type, stream);
+                    Object fInstance = deserializeObject(valueHeader, field.type, stream);
                     field.set(fInstance);
                 } else {
                     // プリミティブとして処理

@@ -26,11 +26,14 @@ public class Serializer {
     }
 
     public byte[] serialize(Object obj) throws SerialException {
+        if (InternalSerializeUtil.isListInterface(obj.getClass())) {
+            throw new IllegalArgumentException();
+        }
         ByteArrayOutputStream os = new ByteArrayOutputStream();
         try {
             DataOutputStream stream = new DataOutputStream(os, false);
             new SerializeHeader().write(stream);
-            encodeObject(obj, stream);
+            encodeObject(ObjectHeader.ID_ROOT, obj, stream);
         } catch (SerialException e) {
             LogUtil.log(e);
             throw e;
@@ -42,23 +45,23 @@ public class Serializer {
         return os.toByteArray();
     }
 
-    private void encodeObject(Object obj, DataOutputStream stream) throws Exception {
+    private void encodeObject(short id, Object obj, DataOutputStream stream) throws Exception {
 
         if (obj != null && InternalSerializeUtil.isListInterface(obj.getClass())) {
             // Listならば配列として書き込む
             List array = (List) obj;
-            ObjectHeader header = new ObjectHeader(ObjectHeader.ID_ROOT, ObjectHeader.OBJECT_FLAG_ARRAY, array.size());
+            ObjectHeader header = new ObjectHeader(id, ObjectHeader.OBJECT_FLAG_ARRAY, array.size());
             header.write(stream);
             for (Object aObj : array) {
-                encodeObject(aObj, stream);
+                encodeObject(id, aObj, stream);
             }
         } else {
             // 通常オブジェクトならばそれを書き込む
-            encodeSingleObject(obj, stream);
+            encodeSingleObject(id, obj, stream);
         }
     }
 
-    private void encodeSingleObject(Object obj, DataOutputStream stream) throws Exception {
+    private void encodeSingleObject(short id, Object obj, DataOutputStream stream) throws Exception {
         Map<Short, SerializeTargetField> fieldMap = InternalSerializeUtil.listSerializeFields(obj);
         short flags;
         if (obj == null) {
@@ -67,8 +70,7 @@ public class Serializer {
             flags = ObjectHeader.OBJECT_FLAG_GROUP;
         }
 
-        // ヘッダを書き込む
-        new ObjectHeader(ObjectHeader.ID_ROOT, flags, fieldMap.size()).write(stream);
+        new ObjectHeader(id, flags, fieldMap.size()).write(stream);
 
         Iterator<Map.Entry<Short, SerializeTargetField>> iterator = fieldMap.entrySet().iterator();
         while (iterator.hasNext()) {
@@ -85,7 +87,7 @@ public class Serializer {
                 mPrimitiveFieldEncoder.encode(value, stream);
             } else {
                 // Objectとして再帰的に書き込む
-                encodeObject(value.object, stream);
+                encodeObject(value.id, value.value, stream);
             }
         }
     }

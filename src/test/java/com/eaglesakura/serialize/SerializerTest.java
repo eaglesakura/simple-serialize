@@ -20,6 +20,7 @@ import java.util.Map;
 import example.model.NullableSerializeTarget;
 import example.model.ObjPrimitiveSerializeTarget;
 import example.model.PrimitiveSerializeTarget;
+import example.model.RecursiveSerializeTarget;
 
 /**
  *
@@ -101,6 +102,21 @@ public class SerializerTest {
         LogUtil.log("Primitive Encode(%d bytes)", bytes.length);
 
         NullableSerializeTarget deserialize = new Deserializer().deserialize(NullableSerializeTarget.class, bytes);
+
+        Assert.assertEquals(target, deserialize);
+    }
+
+    @Test
+    public void ObjectInObjectのシリアライズ() throws Exception {
+        RecursiveSerializeTarget target = new RecursiveSerializeTarget();
+
+        byte[] bytes = new Serializer().serialize(target);
+        Assert.assertNotNull(bytes);
+        Assert.assertNotEquals(bytes.length, 0);
+
+        LogUtil.log("Primitive Encode(%d bytes)", bytes.length);
+
+        RecursiveSerializeTarget deserialize = new Deserializer().deserialize(RecursiveSerializeTarget.class, bytes);
 
         Assert.assertEquals(target, deserialize);
     }
