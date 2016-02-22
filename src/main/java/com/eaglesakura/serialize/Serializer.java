@@ -73,7 +73,11 @@ public class Serializer {
         Iterator<Map.Entry<Short, SerializeTargetField>> iterator = fieldMap.entrySet().iterator();
         while (iterator.hasNext()) {
             SerializeTargetField value = iterator.next().getValue();
-            if (PrimitiveFieldEncoder.isSupport(value.type)) {
+
+            if (value.value == null) {
+                // Nullとして書き込む
+                new ObjectHeader(value.id, ObjectHeader.OBJECT_FLAG_NULL, 0).write(stream);
+            } else if (PrimitiveFieldEncoder.isSupport(value.type)) {
                 // Primitiveとして書き込む
                 final int primitiveSize = mPrimitiveFieldEncoder.getObjectSize(value);
                 final short primitiveFlags = primitiveSize > 255 ? ObjectHeader.OBJECT_FLAG_LARGEDATA : 0x00;

@@ -1,25 +1,39 @@
 package example.model;
 
 import com.eaglesakura.serialize.Serialize;
+import com.eaglesakura.serialize.SerializerTestUtil;
 
 /**
  * Primitive構成された
  */
 public class PrimitiveSerializeTarget {
     @Serialize(id = 20)
-    public boolean booleanValue = true;
+    public boolean booleanValue = SerializerTestUtil.randBool();
     @Serialize(id = 21)
-    public byte byteValue = 1;
+    public byte byteValue = SerializerTestUtil.randInteger();
     @Serialize(id = 22)
-    public short shortValue = 2;
+    public short shortValue = SerializerTestUtil.randInteger();
     @Serialize(id = 24)
-    public int intValue = 4;
+    public int intValue = SerializerTestUtil.randInteger();
     @Serialize(id = 28)
-    public long longValue = 8;
+    public long longValue = SerializerTestUtil.randInteger();
     @Serialize(id = 34)
-    public float floatValue = 14;
+    public float floatValue = SerializerTestUtil.randFloat();
     @Serialize(id = 38)
-    public double doubleValue = 18;
+    public double doubleValue = SerializerTestUtil.randFloat();
+
+    @Serialize(id = 40)
+    public Byte ByteValue = SerializerTestUtil.randInteger();
+    @Serialize(id = 41)
+    public Short ShortValue = (short) SerializerTestUtil.randInteger();
+    @Serialize(id = 42)
+    public Integer IntValue = (int) SerializerTestUtil.randInteger();
+    @Serialize(id = 43)
+    public Long LongValue = (long) SerializerTestUtil.randInteger();
+    @Serialize(id = 44)
+    public Float FloatValue = SerializerTestUtil.randFloat();
+    @Serialize(id = 45)
+    public Double DoubleValue = (double) SerializerTestUtil.randFloat();
 
     @Override
     public boolean equals(Object o) {

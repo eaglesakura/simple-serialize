@@ -1,15 +1,16 @@
 package example.model;
 
 import com.eaglesakura.serialize.Serialize;
+import com.eaglesakura.serialize.SerializerTestUtil;
 
 import java.util.Arrays;
 
 public class ObjPrimitiveSerializeTarget {
     @Serialize(id = 1)
-    public byte[] byteArrayValue = {1, 2, 3, 4, 5};
+    public byte[] byteArrayValue = SerializerTestUtil.randBytes();
 
     @Serialize(id = 2)
-    public String stringValue = "this is test あいうえお@風谷山川海";
+    public String stringValue = SerializerTestUtil.randString();
 
     @Override
     public boolean equals(Object o) {

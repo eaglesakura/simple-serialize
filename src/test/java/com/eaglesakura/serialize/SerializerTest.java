@@ -17,6 +17,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import example.model.NullableSerializeTarget;
 import example.model.ObjPrimitiveSerializeTarget;
 import example.model.PrimitiveSerializeTarget;
 
@@ -59,6 +60,7 @@ public class SerializerTest {
     @Test
     public void Primitive型のシリアライズ() throws Exception {
         PrimitiveSerializeTarget target = new PrimitiveSerializeTarget();
+        target.doubleValue = Math.random();
 
         byte[] bytes = new Serializer().serialize(target);
         Assert.assertNotNull(bytes);
@@ -74,6 +76,7 @@ public class SerializerTest {
     @Test
     public void Primitive型Objectのシリアライズ() throws Exception {
         ObjPrimitiveSerializeTarget target = new ObjPrimitiveSerializeTarget();
+        target.stringValue += System.currentTimeMillis();
 
         byte[] bytes = new Serializer().serialize(target);
         Assert.assertNotNull(bytes);
@@ -82,6 +85,22 @@ public class SerializerTest {
         LogUtil.log("Primitive Encode(%d bytes)", bytes.length);
 
         ObjPrimitiveSerializeTarget deserialize = new Deserializer().deserialize(ObjPrimitiveSerializeTarget.class, bytes);
+
+        Assert.assertEquals(target, deserialize);
+    }
+
+    @Test
+    public void Nullを許容したObjectシリアライズ() throws Exception {
+        NullableSerializeTarget target = new NullableSerializeTarget();
+        target.stringValue += System.currentTimeMillis();
+
+        byte[] bytes = new Serializer().serialize(target);
+        Assert.assertNotNull(bytes);
+        Assert.assertNotEquals(bytes.length, 0);
+
+        LogUtil.log("Primitive Encode(%d bytes)", bytes.length);
+
+        NullableSerializeTarget deserialize = new Deserializer().deserialize(NullableSerializeTarget.class, bytes);
 
         Assert.assertEquals(target, deserialize);
     }

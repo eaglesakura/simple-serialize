@@ -40,10 +40,7 @@ public class PrimitiveFieldEncoder implements FieldEncoder {
     @Override
     public int getObjectSize(SerializeTargetField field) {
         Class<?> type = field.type;
-        if (type.isPrimitive()) {
-            // 最大8byte value
-            return 8;
-        } else if (type.equals(String.class)) {
+        if (type.equals(String.class)) {
             try {
                 return ((String) field.value).getBytes(ObjectHeader.STRING_CHARSET).length;
             } catch (Exception e) {
@@ -55,6 +52,9 @@ public class PrimitiveFieldEncoder implements FieldEncoder {
             } catch (Exception e) {
                 LogUtil.log(e);
             }
+        } else if (isSupport(type)) {
+            // その他のサポート型であれば最大8byte
+            return 8;
         }
         throw new IllegalStateException();
     }
