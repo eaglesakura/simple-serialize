@@ -1,6 +1,7 @@
 package com.eaglesakura.serialize;
 
 import com.eaglesakura.io.DataOutputStream;
+import com.eaglesakura.serialize.error.SerializeException;
 import com.eaglesakura.serialize.internal.InternalSerializeUtil;
 import com.eaglesakura.serialize.internal.ObjectHeader;
 import com.eaglesakura.serialize.internal.PrimitiveFieldEncoder;
@@ -14,19 +15,17 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import javax.sql.rowset.serial.SerialException;
-
-public class Serializer {
+public class PublicFieldSerializer {
 
     /**
      * プリミティブ型を書き込むためのエンコーダ
      */
     PrimitiveFieldEncoder mPrimitiveFieldEncoder = new PrimitiveFieldEncoder();
 
-    public Serializer() {
+    public PublicFieldSerializer() {
     }
 
-    public byte[] serialize(Object obj) throws SerialException {
+    public byte[] serialize(Object obj) throws SerializeException {
         if (ReflectionUtil.isListInterface(obj.getClass())) {
             throw new IllegalArgumentException();
         }
@@ -35,7 +34,7 @@ public class Serializer {
             DataOutputStream stream = new DataOutputStream(os, false);
             new SerializeHeader().write(stream);
             encodeObject(ObjectHeader.ID_ROOT, obj, stream);
-        } catch (SerialException e) {
+        } catch (SerializeException e) {
             LogUtil.log(e);
             throw e;
         } catch (Exception e) {

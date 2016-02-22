@@ -18,8 +18,8 @@ import java.util.Map;
 /**
  * エンコードされたオブジェクトをデシリアライズする
  */
-public class Deserializer {
-    public Deserializer() {
+public class PublicFieldDeserializer {
+    public PublicFieldDeserializer() {
     }
 
     public <T> T deserialize(Class<T> clazz, byte[] buffer) throws SerializeException {
