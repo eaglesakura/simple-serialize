@@ -19,6 +19,15 @@ public class SerializerTestUtil {
         return UUID.randomUUID().toString();
     }
 
+    public static String randLargeString() {
+        StringBuffer result = new StringBuffer();
+        for (int i = 0; i < 256; ++i) {
+            result.append(randString());
+            result.append("-");
+        }
+        return result.toString();
+    }
+
     public static byte[] randBytes() {
         return new byte[]{
                 randInteger(),

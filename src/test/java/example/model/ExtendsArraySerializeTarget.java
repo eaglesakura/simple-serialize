@@ -18,7 +18,7 @@ public class ExtendsArraySerializeTarget extends PrimitiveSerializeTarget {
     public List<PrimitiveSerializeTarget> nullPrimitives = null;
 
     @Serialize(id = 4)
-    public List<String> strings = Arrays.asList(SerializerTestUtil.randString(), null, SerializerTestUtil.randString(), null, null, SerializerTestUtil.randString());
+    public List<String> strings = Arrays.asList(SerializerTestUtil.randString(), null, SerializerTestUtil.randString(), null, null, SerializerTestUtil.randString(), SerializerTestUtil.randLargeString(), SerializerTestUtil.randLargeString());
 
     @Serialize(id = 5)
     public List<String> nullStrings = null;
