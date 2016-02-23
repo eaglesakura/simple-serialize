@@ -35,6 +35,23 @@ public class PrimitiveSerializeTarget {
     @Serialize(id = 45)
     public Double DoubleValue = (double) SerializerTestUtil.randFloat();
 
+    public enum TestEnum {
+        Value0,
+        Value1,
+        Value3,
+        EndValue;
+
+        public static TestEnum rand() {
+            return TestEnum.values()[SerializerTestUtil.randUnsignedInteger() % TestEnum.values().length];
+        }
+    }
+
+    @Serialize(id = 50)
+    public TestEnum nullEnumValue;
+
+    @Serialize(id = 51)
+    public TestEnum enumValue = TestEnum.rand();
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -59,7 +76,10 @@ public class PrimitiveSerializeTarget {
             return false;
         if (FloatValue != null ? !FloatValue.equals(that.FloatValue) : that.FloatValue != null)
             return false;
-        return !(DoubleValue != null ? !DoubleValue.equals(that.DoubleValue) : that.DoubleValue != null);
+        if (DoubleValue != null ? !DoubleValue.equals(that.DoubleValue) : that.DoubleValue != null)
+            return false;
+        if (nullEnumValue != that.nullEnumValue) return false;
+        return enumValue == that.enumValue;
 
     }
 
@@ -81,6 +101,8 @@ public class PrimitiveSerializeTarget {
         result = 31 * result + (LongValue != null ? LongValue.hashCode() : 0);
         result = 31 * result + (FloatValue != null ? FloatValue.hashCode() : 0);
         result = 31 * result + (DoubleValue != null ? DoubleValue.hashCode() : 0);
+        result = 31 * result + (nullEnumValue != null ? nullEnumValue.hashCode() : 0);
+        result = 31 * result + (enumValue != null ? enumValue.hashCode() : 0);
         return result;
     }
 }

@@ -27,6 +27,15 @@ public class ExtendsArraySerializeTarget extends PrimitiveSerializeTarget {
     @Serialize(id = 6)
     public List<String> zeroString = new ArrayList<>();
 
+    @Serialize(id = 7)
+    public List<PrimitiveSerializeTarget.TestEnum> enums = Arrays.asList(TestEnum.EndValue, null, TestEnum.Value0);
+
+    @Serialize(id = 8)
+    public List<PrimitiveSerializeTarget.TestEnum> nullEnums;
+
+    @Serialize(id = 9)
+    public List<PrimitiveSerializeTarget.TestEnum> zeroEnums = new ArrayList<>();
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -44,7 +53,12 @@ public class ExtendsArraySerializeTarget extends PrimitiveSerializeTarget {
         if (strings != null ? !strings.equals(that.strings) : that.strings != null) return false;
         if (nullStrings != null ? !nullStrings.equals(that.nullStrings) : that.nullStrings != null)
             return false;
-        return !(zeroString != null ? !zeroString.equals(that.zeroString) : that.zeroString != null);
+        if (zeroString != null ? !zeroString.equals(that.zeroString) : that.zeroString != null)
+            return false;
+        if (enums != null ? !enums.equals(that.enums) : that.enums != null) return false;
+        if (nullEnums != null ? !nullEnums.equals(that.nullEnums) : that.nullEnums != null)
+            return false;
+        return !(zeroEnums != null ? !zeroEnums.equals(that.zeroEnums) : that.zeroEnums != null);
 
     }
 
@@ -57,6 +71,9 @@ public class ExtendsArraySerializeTarget extends PrimitiveSerializeTarget {
         result = 31 * result + (strings != null ? strings.hashCode() : 0);
         result = 31 * result + (nullStrings != null ? nullStrings.hashCode() : 0);
         result = 31 * result + (zeroString != null ? zeroString.hashCode() : 0);
+        result = 31 * result + (enums != null ? enums.hashCode() : 0);
+        result = 31 * result + (nullEnums != null ? nullEnums.hashCode() : 0);
+        result = 31 * result + (zeroEnums != null ? zeroEnums.hashCode() : 0);
         return result;
     }
 }
