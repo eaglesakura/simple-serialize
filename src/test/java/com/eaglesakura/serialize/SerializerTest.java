@@ -2,6 +2,7 @@ package com.eaglesakura.serialize;
 
 import com.eaglesakura.io.DataInputStream;
 import com.eaglesakura.io.DataOutputStream;
+import com.eaglesakura.serialize.error.FileFormatException;
 import com.eaglesakura.serialize.error.SerializeIdConflictException;
 import com.eaglesakura.serialize.internal.InternalSerializeUtil;
 import com.eaglesakura.serialize.internal.SerializeHeader;
@@ -53,10 +54,39 @@ public class SerializerTest {
         assertEquals(originHeader, readHeader);
     }
 
+    @Test(expected = FileFormatException.class)
+    public void ヘッダが壊れている場合に読み込みを停止する() throws Exception {
+        PrimitiveSerializeTarget target = new PrimitiveSerializeTarget();
+
+        byte[] bytes = new PublicFieldSerializer().serialize(target);
+        assertNotNull(bytes);
+        assertNotEquals(bytes.length, 0);
+
+        LogUtil.log("Primitive Encode(%d bytes)", bytes.length);
+
+        bytes[0] = 0x00;
+
+        new PublicFieldDeserializer().deserialize(PrimitiveSerializeTarget.class, bytes);
+    }
+
+    @Test(expected = FileFormatException.class)
+    public void ファイルバージョンが異なる場合に読み込みを停止する() throws Exception {
+        PrimitiveSerializeTarget target = new PrimitiveSerializeTarget();
+
+        byte[] bytes = new PublicFieldSerializer().serialize(target);
+        assertNotNull(bytes);
+        assertNotEquals(bytes.length, 0);
+
+        LogUtil.log("Primitive Encode(%d bytes)", bytes.length);
+
+        bytes[4] = 0x12;
+
+        new PublicFieldDeserializer().deserialize(PrimitiveSerializeTarget.class, bytes);
+    }
+
     @Test
     public void Primitive型のシリアライズ() throws Exception {
         PrimitiveSerializeTarget target = new PrimitiveSerializeTarget();
-        target.doubleValue = Math.random();
 
         byte[] bytes = new PublicFieldSerializer().serialize(target);
         assertNotNull(bytes);
@@ -72,7 +102,6 @@ public class SerializerTest {
     @Test
     public void Primitive型Objectのシリアライズ() throws Exception {
         ObjPrimitiveSerializeTarget target = new ObjPrimitiveSerializeTarget();
-        target.stringValue += System.currentTimeMillis();
 
         byte[] bytes = new PublicFieldSerializer().serialize(target);
         assertNotNull(bytes);
