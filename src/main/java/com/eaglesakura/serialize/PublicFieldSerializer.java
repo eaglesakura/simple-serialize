@@ -55,6 +55,8 @@ public class PublicFieldSerializer {
             for (Object aObj : array) {
                 if (aObj instanceof String) {
                     encodeArrayString(id, (String) aObj, stream);
+                } else if (aObj instanceof Enum) {
+                    encodeArrayEnum(id, (Enum<?>) aObj, stream);
                 } else {
                     encodeObject(id, aObj, stream);
                 }
@@ -71,6 +73,12 @@ public class PublicFieldSerializer {
         new ObjectHeader(id, buffer.length > 255 ? ObjectHeader.OBJECT_FLAG_LARGEDATA : 0x00, buffer.length).write(stream);
         // データを書き込む
         stream.writeBuffer(buffer, 0, buffer.length);
+    }
+
+    private void encodeArrayEnum(short id, Enum<?> obj, DataOutputStream stream) throws Exception {
+        // ヘッダを書き込む
+        new ObjectHeader(id, (short) 0x00, 2).write(stream);
+        stream.writeS16((short) obj.ordinal());
     }
 
     private void encodeSingleObject(short id, Object obj, DataOutputStream stream) throws Exception {

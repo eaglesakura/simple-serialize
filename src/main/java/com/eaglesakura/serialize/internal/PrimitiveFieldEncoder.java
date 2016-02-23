@@ -34,6 +34,9 @@ public class PrimitiveFieldEncoder implements FieldEncoder {
     }
 
     public static boolean isSupport(Class<?> clazz) {
+        if (clazz.isEnum()) {
+            return true;
+        }
         return gSupportClasses.contains(clazz);
     }
 
@@ -83,6 +86,9 @@ public class PrimitiveFieldEncoder implements FieldEncoder {
                 stream.writeBuffer(buffer, 0, buffer.length);
             } else if (typeClass.equals(Boolean.class)) {
                 stream.writeBoolean((boolean) field.value);
+            } else if (typeClass.isEnum()) {
+                short order = (short) ((Enum<?>) field.value).ordinal();
+                stream.writeS16(order);
             } else {
                 throw new IllegalStateException();
             }
