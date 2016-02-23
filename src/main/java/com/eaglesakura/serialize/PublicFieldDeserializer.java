@@ -11,6 +11,7 @@ import com.eaglesakura.util.LogUtil;
 import com.eaglesakura.util.ReflectionUtil;
 
 import java.io.ByteArrayInputStream;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -38,6 +39,18 @@ public class PublicFieldDeserializer {
         return null;
     }
 
+    private <T> T deserializeEnum(ObjectHeader header, Class<T> clazz, DataInputStream stream) throws SerializeException {
+        try {
+            int index = stream.readU16();
+            Method valuesMethod = clazz.getMethod("values");
+            T[] values = (T[]) valuesMethod.invoke(clazz);
+            return values[index];
+        } catch (Exception e) {
+            LogUtil.log(e);
+            throw new CreateObjectFailedException();
+        }
+    }
+
     private <T> T deserializeObject(ObjectHeader header, Class<T> clazz, DataInputStream stream) throws Exception {
         // Objectを読み込む
         if (header == null) {
@@ -51,6 +64,8 @@ public class PublicFieldDeserializer {
         if (clazz.equals(String.class)) {
             // StringはPrimitiveと同等に扱う
             return (T) (new String(stream.readBuffer(header.size), ObjectHeader.STRING_CHARSET));
+        } else if (clazz.isEnum()) {
+            return deserializeEnum(header, clazz, stream);
         }
 
         T instance = newInstance(clazz);
@@ -81,6 +96,10 @@ public class PublicFieldDeserializer {
                     // 再帰的に生成させる
                     Object fInstance = deserializeObject(valueHeader, field.type, stream);
                     field.set(fInstance);
+                } else if (field.type.isEnum()) {
+                    // enumは独自に扱う
+                    Object enumValue = deserializeEnum(header, field.type, stream);
+                    field.set(enumValue);
                 } else {
                     // プリミティブとして処理
                     Object newValue = field.read(valueHeader, stream);

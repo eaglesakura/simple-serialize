@@ -11,6 +11,10 @@ public class SerializerTestUtil {
         return (byte) ((Math.random() * 255) - 128);
     }
 
+    public static byte randUnsignedInteger() {
+        return (byte) (Math.random() * 127);
+    }
+
     public static float randFloat() {
         return (float) Math.random();
     }
