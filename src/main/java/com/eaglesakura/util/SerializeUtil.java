@@ -126,13 +126,33 @@ public class SerializeUtil {
      * Public Fieldに@Serializeアノテーションを付与したオブジェクトをシリアライズする
      */
     public static byte[] serializePublicFieldObject(Object obj) throws SerializeException {
-        return new PublicFieldSerializer().serialize(obj);
+        return serializePublicFieldObject(obj, false);
+    }
+
+    /**
+     * Public Fieldに@Serializeアノテーションを付与したオブジェクトをシリアライズする
+     *
+     * 圧縮はgzipで行うが、圧縮後のデータのほうが肥大化する場合(小さなデータに顕著)は、容量の小さいサイズを返す。
+     *
+     * そのため、compressにtrueを指定された場合はrawの場合とgzipの場合2種類のデータが返却される可能性がある。
+     *
+     * @param obj      シリアライズするオブジェクト
+     * @param compress データを圧縮する場合はtrue
+     * @return シリアライズされたデータ
+     */
+    public static byte[] serializePublicFieldObject(Object obj, boolean compress) throws SerializeException {
+        byte[] bytes = new PublicFieldSerializer().serialize(obj);
+        if (compress) {
+            return EncodeUtil.compressOrRaw(bytes);
+        } else {
+            return bytes;
+        }
     }
 
     /**
      * Public Fieldに@Serializeアノテーションを付与したオブジェクトをデシリアライズする
      */
     public static <T> T deserializePublicFieldObject(Class<T> clazz, byte[] buffer) throws SerializeException {
-        return new PublicFieldDeserializer().deserialize(clazz, buffer);
+        return new PublicFieldDeserializer().deserialize(clazz, EncodeUtil.decompressOrRaw(buffer));
     }
 }

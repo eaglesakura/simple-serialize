@@ -71,7 +71,7 @@ public class SerializeHeader {
     public static SerializeHeader read(DataInputStream stream) throws IOException, SerializeException {
         final int magic = stream.readS32();
         if (magic != FILE_HEADER) {
-            throw new FileFormatException("File Format Error");
+            throw new FileFormatException(String.format("Magic Error :: %x", magic));
         }
 
         final byte version = stream.readS8();

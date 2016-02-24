@@ -27,9 +27,8 @@ public class PublicFieldDeserializer {
         DataInputStream stream = new DataInputStream(new ByteArrayInputStream(buffer), false);
 
         try {
-            SerializeHeader header = SerializeHeader.read(stream);
-            LogUtil.log("Magic(%x) Version(%d)", header.magic, header.version);
-
+            SerializeHeader.read(stream);
+//            LogUtil.log("Magic(%x) Version(%d)", header.magic, header.version);
             return deserializeObject(null, clazz, stream);
         } catch (SerializeException e) {
             throw e;
