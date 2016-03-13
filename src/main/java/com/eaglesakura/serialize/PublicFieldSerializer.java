@@ -31,7 +31,7 @@ public class PublicFieldSerializer {
         }
         ByteArrayOutputStream os = new ByteArrayOutputStream();
         try {
-            DataOutputStream stream = new DataOutputStream(os, false);
+            DataOutputStream stream = new DataOutputStream(os);
             new SerializeHeader().write(stream);
             encodeObject(ObjectHeader.ID_ROOT, obj, stream);
         } catch (SerializeException e) {

@@ -24,7 +24,7 @@ public class PublicFieldDeserializer {
     }
 
     public <T> T deserialize(Class<T> clazz, byte[] buffer) throws SerializeException {
-        DataInputStream stream = new DataInputStream(new ByteArrayInputStream(buffer), false);
+        DataInputStream stream = new DataInputStream(new ByteArrayInputStream(buffer));
 
         try {
             SerializeHeader.read(stream);

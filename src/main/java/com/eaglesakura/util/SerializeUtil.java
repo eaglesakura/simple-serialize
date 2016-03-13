@@ -26,7 +26,7 @@ public class SerializeUtil {
             }
 
             ByteArrayOutputStream os = new ByteArrayOutputStream(sumSize);
-            DataOutputStream dos = new DataOutputStream(os, false);
+            DataOutputStream dos = new DataOutputStream(os);
 
             dos.writeS32(data.size());
             Iterator<byte[]> iterator = data.iterator();
@@ -55,7 +55,7 @@ public class SerializeUtil {
         try {
 
             ByteArrayInputStream is = new ByteArrayInputStream(buffer, offset, length);
-            DataInputStream dis = new DataInputStream(is, false);
+            DataInputStream dis = new DataInputStream(is);
 
             List<byte[]> result = new ArrayList<>();
             final int num = dis.readS32();
@@ -77,7 +77,7 @@ public class SerializeUtil {
     public static byte[] toByteArray(Map<String, byte[]> data) {
         try {
             ByteArrayOutputStream os = new ByteArrayOutputStream(1024);
-            DataOutputStream dos = new DataOutputStream(os, false);
+            DataOutputStream dos = new DataOutputStream(os);
 
             dos.writeS32((short) data.size());
 
@@ -103,7 +103,7 @@ public class SerializeUtil {
     public static Map<String, byte[]> toKeyValue(byte[] buffer, int offset, int length) {
         try {
             ByteArrayInputStream is = new ByteArrayInputStream(buffer, offset, length);
-            DataInputStream dis = new DataInputStream(is, false);
+            DataInputStream dis = new DataInputStream(is);
 
             Map<String, byte[]> result = new HashMap<>();
 

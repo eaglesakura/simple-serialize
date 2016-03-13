@@ -3,8 +3,7 @@
  */
 package com.eaglesakura.io;
 
-import com.eaglesakura.util.LogUtil;
-import com.eaglesakura.util.Util;
+import com.eaglesakura.util.IOUtil;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -16,35 +15,25 @@ public final class DataInputStream implements Disposable {
     /**
      * 読み取りに使用するリーダー。
      */
-    private InputStream reader = null;
-
-    /**
-     * データが到達するまでのタイムアウト時間
-     */
-    private long dataWaitTimeMs = 0;
-
-    /**
-     * InputStreamをこのストリーム内で解放する場合true
-     */
-    private boolean readerClose = true;
+    private InputStream mInput = null;
 
     /**
      * ストリームを生成する
      *
-     * @param is          データソース
-     * @param streamClsoe {@link #dispose()}でStreamを閉じる場合はtrue
+     * @param is データソース
      */
-    public DataInputStream(InputStream is, boolean streamClsoe) {
-        reader = is;
-        this.readerClose = streamClsoe;
+    public DataInputStream(InputStream is) {
+        mInput = is;
     }
 
-    /**
-     * データの到達待ちのタイムアウトを指定する
-     */
-    public void setDataWaitTimeMs(long dataWaitTimeMs) {
-        this.dataWaitTimeMs = dataWaitTimeMs;
+    @Deprecated
+    public DataInputStream(InputStream is, boolean withClose) {
+        this(is);
+        if (!withClose) {
+            throw new Error();
+        }
     }
+
 
     /**
      * バッファから１バイト読み取る。
@@ -264,61 +253,31 @@ public final class DataInputStream implements Disposable {
      * 必要な容量を読み取る
      *
      * @param buf    書き込み対象のバッファ
-     * @param index  書き込み対象インデックス
+     * @param offset 書き込み対象インデックス
      * @param length 書き込み対象の長さ
      */
-    public int readBuffer(byte[] buf, int index, int length) throws IOException {
-        final int requestLength = length;
+    public void readBuffer(byte[] buf, int offset, int length) throws IOException {
+        // ポインタを読み進める
         while (length > 0) {
-            // 読み取るデータがまだある
-            int available = reader.available();
-
-            // データの到達まで待つ
-            {
-                final long SLEEP_TIME = 99;
-                long waitTime = dataWaitTimeMs;
-                while (available <= 0 && waitTime > 0) {
-                    LogUtil.log("sleep available");
-                    // 読み取りがまだ完了していない
-                    Util.sleep(SLEEP_TIME);
-                    waitTime -= SLEEP_TIME;
-                    available = reader.available();
-                }
-
-                // 待ち時間を超過した場合
-                if (waitTime < 0) {
-                    //                    throw new IOException("data not available");
-                    return requestLength - length;
-                }
+            final int readed = mInput.read(buf, offset, length);
+            if (readed == 0) {
+                // read error!!
+                throw new IOException();
             }
-
-            int readLength = Math.min(available, length);
-            // ポインタを読み進める
-            final int readed = reader.read(buf, index, readLength);
-            index += readed;
+            offset += readed;
             length -= readed;
         }
-
-        return requestLength;
     }
 
     /**
      * 資源の解放を行う。
      * <br>
-     * 必要であれば、内部管理する{@link #reader}のdispose()を行う。
+     * 必要であれば、内部管理する{@link #mInput}のdispose()を行う。
      */
     @Override
     public void dispose() {
-        if (readerClose) {
-            if (reader != null) {
-                try {
-                    reader.close();
-                } catch (Exception e) {
-                    LogUtil.log(e);
-                }
-                reader = null;
-            }
-        }
+        IOUtil.close(mInput);
+        mInput = null;
     }
 
     /**
@@ -328,7 +287,7 @@ public final class DataInputStream implements Disposable {
      * @param pos  シークの位置(byte)
      */
     public void seek(SeekType type, int pos) throws IOException {
-        type.set(reader, pos);
+        type.set(mInput, pos);
     }
 
     /**
