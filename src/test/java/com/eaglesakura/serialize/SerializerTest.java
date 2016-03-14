@@ -44,11 +44,11 @@ public class SerializerTest {
     public void ファイルヘッダーIO() throws Exception {
         SerializeHeader originHeader = new SerializeHeader();
         ByteArrayOutputStream os = new ByteArrayOutputStream();
-        DataOutputStream stream = new DataOutputStream(os, false);
+        DataOutputStream stream = new DataOutputStream(os);
         originHeader.write(stream);
 
         ByteArrayInputStream is = new ByteArrayInputStream(os.toByteArray());
-        DataInputStream inputStream = new DataInputStream(is, false);
+        DataInputStream inputStream = new DataInputStream(is);
         SerializeHeader readHeader = SerializeHeader.read(inputStream);
 
         assertEquals(originHeader, readHeader);

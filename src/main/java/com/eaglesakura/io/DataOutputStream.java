@@ -1,6 +1,6 @@
 package com.eaglesakura.io;
 
-import com.eaglesakura.util.LogUtil;
+import com.eaglesakura.util.IOUtil;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -13,20 +13,23 @@ public final class DataOutputStream implements Disposable {
     /**
      * 入出力。
      */
-    private OutputStream writer = null;
+    private OutputStream mOutput;
 
-    /**
-     * InputStreamをこのストリーム内で解放する場合true
-     */
-    private boolean writerClose = true;
+
+    public DataOutputStream(OutputStream os) {
+        mOutput = os;
+    }
 
     /**
      * @param os        書き込み対象
      * @param withClose {@link #dispose()}でosをcloseする場合はtrue
      */
+    @Deprecated
     public DataOutputStream(OutputStream os, boolean withClose) {
-        writer = os;
-        writerClose = withClose;
+        this(os);
+        if (!withClose) {
+            throw new Error();
+        }
     }
 
     /**
@@ -34,18 +37,8 @@ public final class DataOutputStream implements Disposable {
      */
     @Override
     public void dispose() {
-        if (!writerClose) {
-            return;
-        }
-
-        if (writer != null) {
-            try {
-                writer.close();
-            } catch (Exception e) {
-                LogUtil.log(e);
-            }
-            writer = null;
-        }
+        IOUtil.close(mOutput);
+        mOutput = null;
     }
 
     /**
@@ -56,7 +49,7 @@ public final class DataOutputStream implements Disposable {
      * @param length   書き込みbyte数
      */
     public void writeBuffer(byte[] buf, int position, int length) throws IOException {
-        writer.write(buf, position, length);
+        mOutput.write(buf, position, length);
     }
 
     /**
@@ -235,6 +228,7 @@ public final class DataOutputStream implements Disposable {
      * <br>
      * このメソッドは少数精度を著しく悪くすることに注意すること。
      */
+    @Deprecated
     public void writeGLFloat(float f) throws IOException {
         int n = (int) (f * (float) 0x10000);
 

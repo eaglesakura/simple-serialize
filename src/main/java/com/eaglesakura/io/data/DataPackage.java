@@ -2,13 +2,15 @@ package com.eaglesakura.io.data;
 
 import com.eaglesakura.io.DataInputStream;
 import com.eaglesakura.io.DataOutputStream;
-import com.eaglesakura.util.LogUtil;
+import com.eaglesakura.serialize.error.FileFormatException;
+import com.eaglesakura.serialize.error.SerializeException;
+import com.eaglesakura.util.StringUtil;
+import com.eaglesakura.util.Util;
 
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.util.UUID;
-import java.util.zip.DataFormatException;
+import java.util.Arrays;
 
 /**
  * Bluetooth等を介して少量のデータ（インメモリに収まる程度）をやりとりするクラス
@@ -16,42 +18,15 @@ import java.util.zip.DataFormatException;
  * 受け取ったデータが壊れている場合は適宜dropする
  */
 public class DataPackage {
-
-    /**
-     * データの内容を一意に識別するためのID
-     * 自由に指定可能で、デフォルトではランダムで生成される
-     * ユーザー指定のマジックナンバー等を想定
-     */
-    String uniqueId;
-
     /**
      * エラー検証コードとヘッダを付与したデータ
      */
-    byte[] packedBuffer;
-
-    /**
-     * 識別IDを指定して生成する
-     *
-     * @param uniqueId 一意の識別子
-     * @param buffer   オリジナルバッファ
-     */
-    public DataPackage(String uniqueId, byte[] buffer) {
-        this.uniqueId = uniqueId;
-        this.packedBuffer = pack(buffer);
-    }
+    byte[] mPackedBuffer;
 
     /**
      * パッケージを生成する
-     *
-     * @param buffer 生成元バッファ
      */
-    public DataPackage(byte[] buffer) {
-        this.uniqueId = UUID.randomUUID().toString();
-        this.packedBuffer = pack(buffer);
-    }
-
-    public String getUniqueId() {
-        return uniqueId;
+    public DataPackage() {
     }
 
     /**
@@ -62,17 +37,23 @@ public class DataPackage {
      * @return パッキングされた送信用バッファ
      */
     public byte[] getPackedBuffer() {
-        return packedBuffer;
+        return mPackedBuffer;
     }
 
     @Override
     public boolean equals(Object o) {
-        if (o instanceof DataPackage) {
-            DataPackage other = (DataPackage) o;
-            return this.uniqueId.equals(other.uniqueId);
-        } else {
-            return false;
-        }
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        DataPackage that = (DataPackage) o;
+
+        return Arrays.equals(mPackedBuffer, that.mPackedBuffer);
+
+    }
+
+    @Override
+    public int hashCode() {
+        return Arrays.hashCode(mPackedBuffer);
     }
 
     private static final byte[] MAGIC = new byte[]{
@@ -84,10 +65,14 @@ public class DataPackage {
      * <br>
      * このクラスはデータが壊れているか正常かのチェックのみを行うため、検証コードは非常に短く、衝突耐性は低い。
      *
+     * 必要に応じて処理をオーバーライドすることで、データ改ざんにも対応できる。
+     *
      * @return 検証用の短いバイト配列
      */
-    public static byte[] createVerifyCode(byte[] buffer, int offset, int length) {
+    protected byte[] createVerifyCode(byte[] buffer) {
         byte[] result = new byte[2];
+        final int offset = 0;
+        final int length = buffer.length;
 
         {
             // すべての配列を加算する
@@ -113,10 +98,11 @@ public class DataPackage {
      * @param userData オリジナルのデータ
      * @return パッキングされた送信用データ
      */
-    public static byte[] pack(byte[] userData) {
+    public static DataPackage pack(Class<? extends DataPackage> clazz, byte[] userData) {
         try {
             ByteArrayOutputStream os = new ByteArrayOutputStream();
-            DataOutputStream dos = new DataOutputStream(os, false);
+            DataOutputStream dos = new DataOutputStream(os);
+            DataPackage result = Util.newInstanceOrNull(clazz);
 
             // マジックナンバー
             dos.writeBuffer(MAGIC, 0, MAGIC.length);
@@ -124,54 +110,50 @@ public class DataPackage {
             // データ本体
             dos.writeFile(userData);
 
-            // 検証コード
+            // 検証コードを付与する
             {
-                byte[] verify = createVerifyCode(userData, 0, userData.length);
+                byte[] verify = result.createVerifyCode(userData);
                 dos.writeBuffer(verify, 0, verify.length);
             }
 
-            return os.toByteArray();
+            result.mPackedBuffer = os.toByteArray();
+            return result;
         } catch (Exception e) {
-            LogUtil.log(e);
-            return null;
+            throw new IllegalStateException(e);
         }
     }
 
     /**
      * パッケージをデコードする
      *
-     * @param stream          パッキングされたデータ
-     * @param streamTimeoutMs データ切断までの猶予時間
      * @return 解答されたデータ
      */
-    public static byte[] unpack(InputStream stream, long streamTimeoutMs) throws IOException, DataFormatException {
-        DataInputStream dis = new DataInputStream(stream, false);
-        dis.setDataWaitTimeMs(streamTimeoutMs);
-
+    public static DataPackage unpack(Class<? extends DataPackage> clazz, byte[] packedBuffer) throws IOException, SerializeException {
+        DataInputStream dis = new DataInputStream(new ByteArrayInputStream(packedBuffer));
         {
             byte[] magic = dis.readBuffer(MAGIC.length);
             for (int i = 0; i < magic.length; ++i) {
                 if (magic[i] != MAGIC[i]) {
-                    throw new DataFormatException("Data Format Error");
+                    throw new FileFormatException("Data Format Error");
                 }
             }
         }
 
-        {
-            byte[] file = dis.readFile();
-            byte[] fileVerify = createVerifyCode(file, 0, file.length);
-            byte[] verify = dis.readBuffer(fileVerify.length);
+        DataPackage result = Util.newInstanceOrNull(clazz);
 
-            for (int i = 0; i < verify.length; ++i) {
-                if (verify[i] != fileVerify[i]) {
-                    LogUtil.log("verify :: " + fileVerify[0] + "/" + fileVerify[1]);
-                    LogUtil.log("readed verify :: " + verify[0] + "/" + verify[1]);
-                    throw new DataFormatException("Verify Error");
-                }
-            }
+        byte[] file = dis.readFile();
+        byte[] fileVerify = result.createVerifyCode(file);
+        byte[] verify = dis.readBuffer(fileVerify.length);
 
-            // ファイル本体を返す
-            return file;
+        if (!Arrays.equals(fileVerify, verify)) {
+            final String fileVerifyHex = StringUtil.toHexString(fileVerify);
+            final String verifyHex = StringUtil.toHexString(verify);
+
+            throw new FileFormatException(String.format("Verify Error [%s] != [%s]", fileVerifyHex, verifyHex));
         }
+
+        // ファイル本体を返す
+        result.mPackedBuffer = file;
+        return result;
     }
 }
