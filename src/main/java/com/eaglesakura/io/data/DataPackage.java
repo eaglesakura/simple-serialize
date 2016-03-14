@@ -126,9 +126,9 @@ public class DataPackage {
     /**
      * パッケージをデコードする
      *
-     * @return 解答されたデータ
+     * @return 解凍されたデータ
      */
-    public static DataPackage unpack(Class<? extends DataPackage> clazz, byte[] packedBuffer) throws IOException, SerializeException {
+    public static byte[] unpack(Class<? extends DataPackage> clazz, byte[] packedBuffer) throws IOException, SerializeException {
         DataInputStream dis = new DataInputStream(new ByteArrayInputStream(packedBuffer));
         {
             byte[] magic = dis.readBuffer(MAGIC.length);
@@ -153,7 +153,6 @@ public class DataPackage {
         }
 
         // ファイル本体を返す
-        result.mPackedBuffer = file;
-        return result;
+        return file;
     }
 }
