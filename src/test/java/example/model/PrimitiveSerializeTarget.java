@@ -1,39 +1,39 @@
 package example.model;
 
 import com.eaglesakura.serialize.Serialize;
-import com.eaglesakura.serialize.SerializerTestUtil;
+import com.eaglesakura.util.RandomUtil;
 
 /**
  * Primitive構成された
  */
 public class PrimitiveSerializeTarget {
     @Serialize(id = 20)
-    public boolean booleanValue = SerializerTestUtil.randBool();
+    public boolean booleanValue = RandomUtil.randBool();
     @Serialize(id = 21)
-    public byte byteValue = SerializerTestUtil.randInteger();
+    public byte byteValue = RandomUtil.randInt8();
     @Serialize(id = 22)
-    public short shortValue = SerializerTestUtil.randInteger();
+    public short shortValue = RandomUtil.randInt16();
     @Serialize(id = 24)
-    public int intValue = SerializerTestUtil.randInteger();
+    public int intValue = RandomUtil.randInt32();
     @Serialize(id = 28)
-    public long longValue = SerializerTestUtil.randInteger();
+    public long longValue = RandomUtil.randInt64();
     @Serialize(id = 34)
-    public float floatValue = SerializerTestUtil.randFloat();
+    public float floatValue = RandomUtil.randFloat();
     @Serialize(id = 38)
-    public double doubleValue = SerializerTestUtil.randFloat();
+    public double doubleValue = RandomUtil.randFloat();
 
     @Serialize(id = 40)
-    public Byte ByteValue = SerializerTestUtil.randInteger();
+    public Byte ByteValue = RandomUtil.randInt8();
     @Serialize(id = 41)
-    public Short ShortValue = (short) SerializerTestUtil.randInteger();
+    public Short ShortValue = RandomUtil.randInt16();
     @Serialize(id = 42)
-    public Integer IntValue = (int) SerializerTestUtil.randInteger();
+    public Integer IntValue = RandomUtil.randInt32();
     @Serialize(id = 43)
-    public Long LongValue = (long) SerializerTestUtil.randInteger();
+    public Long LongValue = RandomUtil.randInt64();
     @Serialize(id = 44)
-    public Float FloatValue = SerializerTestUtil.randFloat();
+    public Float FloatValue = RandomUtil.randFloat();
     @Serialize(id = 45)
-    public Double DoubleValue = (double) SerializerTestUtil.randFloat();
+    public Double DoubleValue = (double) RandomUtil.randFloat();
 
     public enum TestEnum {
         Value0,
@@ -42,7 +42,7 @@ public class PrimitiveSerializeTarget {
         EndValue;
 
         public static TestEnum rand() {
-            return TestEnum.values()[SerializerTestUtil.randUnsignedInteger() % TestEnum.values().length];
+            return RandomUtil.randEnum(TestEnum.class);
         }
     }
 

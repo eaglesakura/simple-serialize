@@ -2,17 +2,23 @@ package com.eaglesakura.serialize;
 
 import com.eaglesakura.io.DataInputStream;
 import com.eaglesakura.io.DataOutputStream;
+import com.eaglesakura.io.data.DataVerifier;
 import com.eaglesakura.serialize.error.FileFormatException;
 import com.eaglesakura.serialize.error.SerializeIdConflictException;
 import com.eaglesakura.serialize.internal.InternalSerializeUtil;
 import com.eaglesakura.serialize.internal.SerializeHeader;
 import com.eaglesakura.serialize.internal.SerializeTargetField;
+import com.eaglesakura.util.EncodeUtil;
 import com.eaglesakura.util.LogUtil;
+import com.eaglesakura.util.ReflectionUtil;
+import com.eaglesakura.util.SerializeUtil;
+import com.eaglesakura.util.StringUtil;
 
 import org.junit.Test;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.util.Arrays;
 import java.util.Map;
 
 import example.model.ExtendsArraySerializeTarget;
@@ -25,11 +31,49 @@ import example.model.RecursiveSerializeTarget;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 /**
  *
  */
 public class SerializerTest {
+
+    static final int TRY_SERIALIZE_COUNT = 1024;
+
+    public static <T> void assertSerialize(Class<T> clazz) throws Exception {
+
+        LogUtil.log("Serialize :: " + clazz.getName());
+        for (int i = 0; i < TRY_SERIALIZE_COUNT; ++i) {
+            DataVerifier verifier = new DataVerifier();
+            T obj = ReflectionUtil.newInstanceOrNull(clazz);
+
+            byte[] buffer = SerializeUtil.serializePublicFieldObject(obj, true);
+            assertNotNull(buffer);
+            assertNotEquals(buffer.length, 0);
+
+            // ベリファイコードを与える
+            byte[] packed = verifier.pack(buffer);
+            assertNotNull(packed);
+            assertTrue(packed.length > buffer.length);
+            // ベリファイコードの後ろ4桁が0x00でないことを検証する
+            assertNotEquals(packed[(packed.length - 4)], 0x00);
+            assertNotEquals(packed[(packed.length - 3)], 0x00);
+            assertNotEquals(packed[(packed.length - 2)], 0x00);
+            assertNotEquals(packed[(packed.length - 1)], 0x00);
+//            LogUtil.log("   num[%04d] hash(%s) verify(%s)", i, EncodeUtil.genMD5(buffer), StringUtil.toHexString(new byte[]{packed[(packed.length - 4)], packed[(packed.length - 3)], packed[(packed.length - 2)], packed[(packed.length - 1)]}));
+
+            // ベリファイコードを剥がす
+            byte[] unpacked = verifier.unpack(packed);
+            assertNotNull(unpacked);
+            assertEquals(unpacked.length, buffer.length);
+            assertTrue(Arrays.equals(buffer, unpacked));
+
+            Object deserialized = SerializeUtil.deserializePublicFieldObject(obj.getClass(), buffer);
+            assertNotNull(deserialized);
+            assertEquals(obj, deserialized);
+        }
+        LogUtil.log("  Finished");
+    }
 
     @Test
     public void Field列挙() throws Exception {
@@ -84,84 +128,33 @@ public class SerializerTest {
         new PublicFieldDeserializer().deserialize(PrimitiveSerializeTarget.class, bytes);
     }
 
+    @Test(expected = SerializeIdConflictException.class)
+    public void IDの重複は例外とする() throws Exception {
+        new PublicFieldSerializer().serialize(new IdConflictTarget());
+    }
+
     @Test
     public void Primitive型のシリアライズ() throws Exception {
-        PrimitiveSerializeTarget target = new PrimitiveSerializeTarget();
-
-        byte[] bytes = new PublicFieldSerializer().serialize(target);
-        assertNotNull(bytes);
-        assertNotEquals(bytes.length, 0);
-
-        LogUtil.log("Primitive Encode(%d bytes)", bytes.length);
-
-        PrimitiveSerializeTarget deserialize = new PublicFieldDeserializer().deserialize(PrimitiveSerializeTarget.class, bytes);
-
-        assertEquals(target, deserialize);
+        assertSerialize(PrimitiveSerializeTarget.class);
     }
 
     @Test
     public void Primitive型Objectのシリアライズ() throws Exception {
-        ObjPrimitiveSerializeTarget target = new ObjPrimitiveSerializeTarget();
-
-        byte[] bytes = new PublicFieldSerializer().serialize(target);
-        assertNotNull(bytes);
-        assertNotEquals(bytes.length, 0);
-
-        LogUtil.log("Primitive Encode(%d bytes)", bytes.length);
-
-        ObjPrimitiveSerializeTarget deserialize = new PublicFieldDeserializer().deserialize(ObjPrimitiveSerializeTarget.class, bytes);
-
-        assertEquals(target, deserialize);
+        assertSerialize(ObjPrimitiveSerializeTarget.class);
     }
 
     @Test
     public void Nullを許容したObjectシリアライズ() throws Exception {
-        NullableSerializeTarget target = new NullableSerializeTarget();
-        target.stringValue += System.currentTimeMillis();
-
-        byte[] bytes = new PublicFieldSerializer().serialize(target);
-        assertNotNull(bytes);
-        assertNotEquals(bytes.length, 0);
-
-        LogUtil.log("Primitive Encode(%d bytes)", bytes.length);
-
-        NullableSerializeTarget deserialize = new PublicFieldDeserializer().deserialize(NullableSerializeTarget.class, bytes);
-
-        assertEquals(target, deserialize);
+        assertSerialize(NullableSerializeTarget.class);
     }
 
     @Test
     public void ObjectInObjectのシリアライズ() throws Exception {
-        RecursiveSerializeTarget target = new RecursiveSerializeTarget();
-
-        byte[] bytes = new PublicFieldSerializer().serialize(target);
-        assertNotNull(bytes);
-        assertNotEquals(bytes.length, 0);
-
-        LogUtil.log("Primitive Encode(%d bytes)", bytes.length);
-
-        RecursiveSerializeTarget deserialize = new PublicFieldDeserializer().deserialize(RecursiveSerializeTarget.class, bytes);
-
-        assertEquals(target, deserialize);
+        assertSerialize(RecursiveSerializeTarget.class);
     }
 
     @Test
     public void 配列作成と継承を行ったオブジェクトのシリアライズ() throws Exception {
-        ExtendsArraySerializeTarget target = new ExtendsArraySerializeTarget();
-
-        byte[] bytes = new PublicFieldSerializer().serialize(target);
-        assertNotNull(bytes);
-        assertNotEquals(bytes.length, 0);
-
-        LogUtil.log("Primitive Encode(%d bytes)", bytes.length);
-
-        ExtendsArraySerializeTarget deserialize = new PublicFieldDeserializer().deserialize(ExtendsArraySerializeTarget.class, bytes);
-
-        assertEquals(target, deserialize);
-    }
-
-    @Test(expected = SerializeIdConflictException.class)
-    public void IDの重複は例外とする() throws Exception {
-        new PublicFieldSerializer().serialize(new IdConflictTarget());
+        assertSerialize(ExtendsArraySerializeTarget.class);
     }
 }

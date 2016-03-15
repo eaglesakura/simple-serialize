@@ -62,6 +62,10 @@ public class ObjectHeader {
     public static final short ID_ROOT = (short) 0xEFCD;
 
     public ObjectHeader(short id, short flags, int size) {
+        if (size < 0) {
+            throw new IllegalArgumentException("size : " + size);
+        }
+
         this.id = id;
         this.flags = flags;
         this.size = size;
@@ -125,13 +129,13 @@ public class ObjectHeader {
         if ((flags & OBJECT_FLAG_ARRAY) != 0) {
             size = stream.readS32();
         } else if ((flags & OBJECT_FLAG_GROUP) != 0) {
-            size = stream.readS16();
+            size = stream.readU16();
         } else if ((flags & OBJECT_FLAG_LARGEDATA) != 0) {
             size = stream.readS32();
         } else if ((flags & OBJECT_FLAG_NULL) != 0) {
             size = 0;
         } else {
-            size = stream.readS8();
+            size = stream.readU8();
         }
 
         return new ObjectHeader(id, flags, size);

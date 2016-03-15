@@ -4,8 +4,8 @@ import com.eaglesakura.io.DataInputStream;
 import com.eaglesakura.io.DataOutputStream;
 import com.eaglesakura.serialize.error.FileFormatException;
 import com.eaglesakura.serialize.error.SerializeException;
+import com.eaglesakura.util.ReflectionUtil;
 import com.eaglesakura.util.StringUtil;
-import com.eaglesakura.util.Util;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -16,7 +16,10 @@ import java.util.Arrays;
  * Bluetooth等を介して少量のデータ（インメモリに収まる程度）をやりとりするクラス
  * bluetooth/Wi-Fi-Direct/socket通信等で使用する
  * 受け取ったデータが壊れている場合は適宜dropする
+ *
+ * @see DataVerifier
  */
+@Deprecated
 public class DataPackage {
     /**
      * エラー検証コードとヘッダを付与したデータ
@@ -102,7 +105,7 @@ public class DataPackage {
         try {
             ByteArrayOutputStream os = new ByteArrayOutputStream();
             DataOutputStream dos = new DataOutputStream(os);
-            DataPackage result = Util.newInstanceOrNull(clazz);
+            DataPackage result = ReflectionUtil.newInstanceOrNull(clazz);
 
             // マジックナンバー
             dos.writeBuffer(MAGIC, 0, MAGIC.length);
@@ -126,9 +129,9 @@ public class DataPackage {
     /**
      * パッケージをデコードする
      *
-     * @return 解答されたデータ
+     * @return 解凍されたデータ
      */
-    public static DataPackage unpack(Class<? extends DataPackage> clazz, byte[] packedBuffer) throws IOException, SerializeException {
+    public static byte[] unpack(Class<? extends DataPackage> clazz, byte[] packedBuffer) throws IOException, SerializeException {
         DataInputStream dis = new DataInputStream(new ByteArrayInputStream(packedBuffer));
         {
             byte[] magic = dis.readBuffer(MAGIC.length);
@@ -139,7 +142,7 @@ public class DataPackage {
             }
         }
 
-        DataPackage result = Util.newInstanceOrNull(clazz);
+        DataPackage result = ReflectionUtil.newInstanceOrNull(clazz);
 
         byte[] file = dis.readFile();
         byte[] fileVerify = result.createVerifyCode(file);
@@ -153,7 +156,6 @@ public class DataPackage {
         }
 
         // ファイル本体を返す
-        result.mPackedBuffer = file;
-        return result;
+        return file;
     }
 }
