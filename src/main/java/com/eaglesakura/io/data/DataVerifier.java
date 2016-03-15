@@ -35,17 +35,18 @@ public class DataVerifier {
         final int offset = 0;
         final int length = src.length;
 
-        short sum0 = 0;
+        short sum0 = (short) src.length;
         short sum1 = 0;
         {
             // すべての配列を加算する
             for (int i = 0; i < length; ++i) {
                 sum0 += src[offset + i];
+                sum0 = (short) ((sum0 << 1) | (sum0 >> 15 & 1)); // bit rotate
             }
         }
         {
             // すべての配列を乗算する
-            int temp = 1;
+            int temp = (src.length) | 0x01;
             for (int i = 0; i < length; ++i) {
                 temp *= (((int) src[offset + i]) | 0x01);
             }
@@ -53,10 +54,10 @@ public class DataVerifier {
         }
 
         return new byte[]{
-                (byte) (sum0 >> 8),
-                (byte) (sum0),
-                (byte) (sum1 >> 8),
-                (byte) (sum1),
+                (byte) (sum0 >> 8 | 0x04),
+                (byte) (sum0 | 0x08),
+                (byte) (sum1 >> 8 | 0x01),
+                (byte) (sum1 | 0x02),
         };
     }
 

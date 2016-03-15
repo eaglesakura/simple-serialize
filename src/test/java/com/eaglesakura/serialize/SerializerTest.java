@@ -8,9 +8,11 @@ import com.eaglesakura.serialize.error.SerializeIdConflictException;
 import com.eaglesakura.serialize.internal.InternalSerializeUtil;
 import com.eaglesakura.serialize.internal.SerializeHeader;
 import com.eaglesakura.serialize.internal.SerializeTargetField;
+import com.eaglesakura.util.EncodeUtil;
 import com.eaglesakura.util.LogUtil;
 import com.eaglesakura.util.ReflectionUtil;
 import com.eaglesakura.util.SerializeUtil;
+import com.eaglesakura.util.StringUtil;
 
 import org.junit.Test;
 
@@ -53,6 +55,12 @@ public class SerializerTest {
             byte[] packed = verifier.pack(buffer);
             assertNotNull(packed);
             assertTrue(packed.length > buffer.length);
+            // ベリファイコードの後ろ4桁が0x00でないことを検証する
+            assertNotEquals(packed[(packed.length - 4)], 0x00);
+            assertNotEquals(packed[(packed.length - 3)], 0x00);
+            assertNotEquals(packed[(packed.length - 2)], 0x00);
+            assertNotEquals(packed[(packed.length - 1)], 0x00);
+//            LogUtil.log("   num[%04d] hash(%s) verify(%s)", i, EncodeUtil.genMD5(buffer), StringUtil.toHexString(new byte[]{packed[(packed.length - 4)], packed[(packed.length - 3)], packed[(packed.length - 2)], packed[(packed.length - 1)]}));
 
             // ベリファイコードを剥がす
             byte[] unpacked = verifier.unpack(packed);
