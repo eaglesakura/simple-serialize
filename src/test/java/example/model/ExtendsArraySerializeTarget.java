@@ -1,7 +1,7 @@
 package example.model;
 
 import com.eaglesakura.serialize.Serialize;
-import com.eaglesakura.serialize.SerializerTestUtil;
+import com.eaglesakura.util.RandomUtil;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -19,7 +19,7 @@ public class ExtendsArraySerializeTarget extends PrimitiveSerializeTarget {
     public List<PrimitiveSerializeTarget> nullPrimitives = null;
 
     @Serialize(id = 4)
-    public List<String> strings = Arrays.asList(SerializerTestUtil.randString(), null, SerializerTestUtil.randString(), null, null, SerializerTestUtil.randString(), SerializerTestUtil.randLargeString(), SerializerTestUtil.randLargeString());
+    public List<String> strings = Arrays.asList(RandomUtil.randString(), null, RandomUtil.randString(), null, null, RandomUtil.randString(), RandomUtil.randLargeString(), RandomUtil.randLargeString());
 
     @Serialize(id = 5)
     public List<String> nullStrings = null;

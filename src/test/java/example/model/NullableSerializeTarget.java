@@ -1,7 +1,7 @@
 package example.model;
 
 import com.eaglesakura.serialize.Serialize;
-import com.eaglesakura.serialize.SerializerTestUtil;
+import com.eaglesakura.util.RandomUtil;
 
 import java.util.Arrays;
 
@@ -13,25 +13,21 @@ public class NullableSerializeTarget {
     public String nullStringValue = null;
 
     @Serialize(id = 2)
-    public String stringValue = SerializerTestUtil.randString();
+    public String stringValue = RandomUtil.randString();
 
     @Serialize(id = 3)
     public byte[] nullByteArray = null;
 
     @Serialize(id = 4)
-    public byte[] byteArray = SerializerTestUtil.randBytes();
+    public byte[] byteArray = RandomUtil.randBytes();
 
     @Serialize(id = 5)
-    public byte[] byteLargeArray;
+    public byte[] byteLargeArray = RandomUtil.randBytes(1024 * 4);
 
     @Serialize(id = 6)
-    public String largeStringValue = SerializerTestUtil.randLargeString();
+    public String largeStringValue = RandomUtil.randLargeString();
 
     public NullableSerializeTarget() {
-        byteLargeArray = new byte[1024 * 4];
-        for (int i = 0; i < byteLargeArray.length; ++i) {
-            byteLargeArray[i] = SerializerTestUtil.randInteger();
-        }
     }
 
     @Override

@@ -4,8 +4,8 @@ import com.eaglesakura.io.DataInputStream;
 import com.eaglesakura.io.DataOutputStream;
 import com.eaglesakura.serialize.error.FileFormatException;
 import com.eaglesakura.serialize.error.SerializeException;
+import com.eaglesakura.util.ReflectionUtil;
 import com.eaglesakura.util.StringUtil;
-import com.eaglesakura.util.Util;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -102,7 +102,7 @@ public class DataPackage {
         try {
             ByteArrayOutputStream os = new ByteArrayOutputStream();
             DataOutputStream dos = new DataOutputStream(os);
-            DataPackage result = Util.newInstanceOrNull(clazz);
+            DataPackage result = ReflectionUtil.newInstanceOrNull(clazz);
 
             // マジックナンバー
             dos.writeBuffer(MAGIC, 0, MAGIC.length);
@@ -139,7 +139,7 @@ public class DataPackage {
             }
         }
 
-        DataPackage result = Util.newInstanceOrNull(clazz);
+        DataPackage result = ReflectionUtil.newInstanceOrNull(clazz);
 
         byte[] file = dis.readFile();
         byte[] fileVerify = result.createVerifyCode(file);
