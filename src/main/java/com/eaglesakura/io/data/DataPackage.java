@@ -16,7 +16,10 @@ import java.util.Arrays;
  * Bluetooth等を介して少量のデータ（インメモリに収まる程度）をやりとりするクラス
  * bluetooth/Wi-Fi-Direct/socket通信等で使用する
  * 受け取ったデータが壊れている場合は適宜dropする
+ *
+ * @see DataVerifier
  */
+@Deprecated
 public class DataPackage {
     /**
      * エラー検証コードとヘッダを付与したデータ

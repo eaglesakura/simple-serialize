@@ -2,7 +2,7 @@ package com.eaglesakura.serialize;
 
 import com.eaglesakura.io.DataInputStream;
 import com.eaglesakura.io.DataOutputStream;
-import com.eaglesakura.io.data.DataPackage;
+import com.eaglesakura.io.data.DataVerifier;
 import com.eaglesakura.serialize.error.FileFormatException;
 import com.eaglesakura.serialize.error.SerializeIdConflictException;
 import com.eaglesakura.serialize.internal.InternalSerializeUtil;
@@ -36,23 +36,33 @@ import static org.junit.Assert.assertTrue;
  */
 public class SerializerTest {
 
-    final int TRY_SERIALIZE_COUNT = 1024;
+    static final int TRY_SERIALIZE_COUNT = 1024;
 
-    <T> void assertSerialize(Class<T> clazz) throws Exception {
+    public static <T> void assertSerialize(Class<T> clazz) throws Exception {
 
         LogUtil.log("Serialize :: " + clazz.getName());
         for (int i = 0; i < TRY_SERIALIZE_COUNT; ++i) {
+            DataVerifier verifier = new DataVerifier();
             T obj = ReflectionUtil.newInstanceOrNull(clazz);
+
             byte[] buffer = SerializeUtil.serializePublicFieldObject(obj, true);
             assertNotNull(buffer);
             assertNotEquals(buffer.length, 0);
+
+            // ベリファイコードを与える
+            byte[] packed = verifier.pack(buffer);
+            assertNotNull(packed);
+            assertTrue(packed.length > buffer.length);
+
+            // ベリファイコードを剥がす
+            byte[] unpacked = verifier.unpack(packed);
+            assertNotNull(unpacked);
+            assertEquals(unpacked.length, buffer.length);
+            assertTrue(Arrays.equals(buffer, unpacked));
+
             Object deserialized = SerializeUtil.deserializePublicFieldObject(obj.getClass(), buffer);
             assertNotNull(deserialized);
             assertEquals(obj, deserialized);
-
-            DataPackage packed = DataPackage.pack(DataPackage.class, buffer);
-            byte[] unpacked = DataPackage.unpack(DataPackage.class, packed.getPackedBuffer());
-            assertTrue(Arrays.equals(buffer, unpacked));
         }
         LogUtil.log("  Finished");
     }
