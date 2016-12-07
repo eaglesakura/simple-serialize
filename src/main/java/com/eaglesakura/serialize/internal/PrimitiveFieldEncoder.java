@@ -2,7 +2,7 @@ package com.eaglesakura.serialize.internal;
 
 import com.eaglesakura.io.DataOutputStream;
 import com.eaglesakura.serialize.FieldEncoder;
-import com.eaglesakura.util.LogUtil;
+import com.eaglesakura.util.ReflectionUtil;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -47,13 +47,13 @@ public class PrimitiveFieldEncoder implements FieldEncoder {
             try {
                 return ((String) field.value).getBytes(ObjectHeader.STRING_CHARSET).length;
             } catch (Exception e) {
-                LogUtil.log(e);
+                e.printStackTrace();
             }
         } else if (type.equals(byte[].class)) {
             try {
                 return ((byte[]) field.value).length;
             } catch (Exception e) {
-                LogUtil.log(e);
+                e.printStackTrace();
             }
         } else if (isSupport(type)) {
             // その他のサポート型であれば最大8byte
@@ -86,15 +86,15 @@ public class PrimitiveFieldEncoder implements FieldEncoder {
                 stream.writeBuffer(buffer, 0, buffer.length);
             } else if (typeClass.equals(Boolean.class)) {
                 stream.writeBoolean((boolean) field.value);
-            } else if (typeClass.isEnum()) {
+            } else if (typeClass.isEnum() || ReflectionUtil.instanceOf(field.value, Enum.class)) {
+                // enum互換がある場合
                 short order = (short) ((Enum<?>) field.value).ordinal();
                 stream.writeS16(order);
             } else {
                 throw new IllegalStateException();
             }
         } catch (Exception e) {
-            LogUtil.log(e);
-            throw new IllegalStateException();
+            throw new IllegalStateException(e);
         }
     }
 }

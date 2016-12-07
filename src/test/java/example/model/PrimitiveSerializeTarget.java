@@ -46,11 +46,50 @@ public class PrimitiveSerializeTarget {
         }
     }
 
+    public enum TestEnumWithMethod {
+        Value0 {
+            @Override
+            public String getName() {
+                return toString();
+            }
+        },
+        Value1 {
+            @Override
+            public String getName() {
+                return toString();
+            }
+        },
+        Value3 {
+            @Override
+            public String getName() {
+                return toString();
+            }
+        },
+        EndValue {
+            @Override
+            public String getName() {
+                return toString();
+            }
+        };
+
+        public abstract String getName();
+
+        public static TestEnumWithMethod rand() {
+            return RandomUtil.randEnum(TestEnumWithMethod.class);
+        }
+    }
+
     @Serialize(id = 50)
     public TestEnum nullEnumValue;
 
     @Serialize(id = 51)
     public TestEnum enumValue = TestEnum.rand();
+
+    @Serialize(id = 52)
+    public TestEnumWithMethod nullEnumValueWithMethod;
+
+    @Serialize(id = 53)
+    public TestEnumWithMethod enumValueWithMethod = TestEnumWithMethod.rand();
 
     @Override
     public boolean equals(Object o) {
@@ -79,7 +118,9 @@ public class PrimitiveSerializeTarget {
         if (DoubleValue != null ? !DoubleValue.equals(that.DoubleValue) : that.DoubleValue != null)
             return false;
         if (nullEnumValue != that.nullEnumValue) return false;
-        return enumValue == that.enumValue;
+        if (enumValue != that.enumValue) return false;
+        if (nullEnumValueWithMethod != that.nullEnumValueWithMethod) return false;
+        return enumValueWithMethod == that.enumValueWithMethod;
 
     }
 
@@ -103,6 +144,8 @@ public class PrimitiveSerializeTarget {
         result = 31 * result + (DoubleValue != null ? DoubleValue.hashCode() : 0);
         result = 31 * result + (nullEnumValue != null ? nullEnumValue.hashCode() : 0);
         result = 31 * result + (enumValue != null ? enumValue.hashCode() : 0);
+        result = 31 * result + (nullEnumValueWithMethod != null ? nullEnumValueWithMethod.hashCode() : 0);
+        result = 31 * result + (enumValueWithMethod != null ? enumValueWithMethod.hashCode() : 0);
         return result;
     }
 }

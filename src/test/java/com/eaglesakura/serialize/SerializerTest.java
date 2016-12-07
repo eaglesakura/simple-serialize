@@ -8,11 +8,9 @@ import com.eaglesakura.serialize.error.SerializeIdConflictException;
 import com.eaglesakura.serialize.internal.InternalSerializeUtil;
 import com.eaglesakura.serialize.internal.SerializeHeader;
 import com.eaglesakura.serialize.internal.SerializeTargetField;
-import com.eaglesakura.util.EncodeUtil;
 import com.eaglesakura.util.LogUtil;
 import com.eaglesakura.util.ReflectionUtil;
 import com.eaglesakura.util.SerializeUtil;
-import com.eaglesakura.util.StringUtil;
 
 import org.junit.Test;
 
@@ -42,7 +40,7 @@ public class SerializerTest {
 
     public static <T> void assertSerialize(Class<T> clazz) throws Exception {
 
-        LogUtil.log("Serialize :: " + clazz.getName());
+        LogUtil.out("assertSerialize", "Serialize :: " + clazz.getName());
         for (int i = 0; i < TRY_SERIALIZE_COUNT; ++i) {
             DataVerifier verifier = new DataVerifier();
             T obj = ReflectionUtil.newInstanceOrNull(clazz);
@@ -72,7 +70,7 @@ public class SerializerTest {
             assertNotNull(deserialized);
             assertEquals(obj, deserialized);
         }
-        LogUtil.log("  Finished");
+        LogUtil.out("serialize", "  Finished");
     }
 
     @Test
@@ -121,7 +119,7 @@ public class SerializerTest {
         assertNotNull(bytes);
         assertNotEquals(bytes.length, 0);
 
-        LogUtil.log("Primitive Encode(%d bytes)", bytes.length);
+        LogUtil.out("serialize", "Primitive Encode(%d bytes)", bytes.length);
 
         bytes[4] = 0x12;
 

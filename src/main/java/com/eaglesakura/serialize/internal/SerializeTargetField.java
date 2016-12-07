@@ -2,7 +2,6 @@ package com.eaglesakura.serialize.internal;
 
 import com.eaglesakura.io.DataInputStream;
 import com.eaglesakura.serialize.Serialize;
-import com.eaglesakura.util.LogUtil;
 
 import java.lang.reflect.Field;
 
@@ -103,7 +102,7 @@ public class SerializeTargetField {
                 return field.get(obj);
             }
         } catch (Exception e) {
-            LogUtil.log(e);
+            e.printStackTrace();
             return null;
         }
     }

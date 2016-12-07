@@ -7,7 +7,6 @@ import com.eaglesakura.serialize.internal.ObjectHeader;
 import com.eaglesakura.serialize.internal.PrimitiveFieldEncoder;
 import com.eaglesakura.serialize.internal.SerializeHeader;
 import com.eaglesakura.serialize.internal.SerializeTargetField;
-import com.eaglesakura.util.LogUtil;
 import com.eaglesakura.util.ReflectionUtil;
 
 import java.io.ByteArrayOutputStream;
@@ -35,11 +34,9 @@ public class PublicFieldSerializer {
             new SerializeHeader().write(stream);
             encodeObject(ObjectHeader.ID_ROOT, obj, stream);
         } catch (SerializeException e) {
-            LogUtil.log(e);
             throw e;
         } catch (Exception e) {
-            LogUtil.log(e);
-            throw new IllegalStateException();
+            throw new IllegalStateException(e);
         }
 
         return os.toByteArray();

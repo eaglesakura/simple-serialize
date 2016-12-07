@@ -7,7 +7,6 @@ import com.eaglesakura.serialize.internal.InternalSerializeUtil;
 import com.eaglesakura.serialize.internal.ObjectHeader;
 import com.eaglesakura.serialize.internal.SerializeHeader;
 import com.eaglesakura.serialize.internal.SerializeTargetField;
-import com.eaglesakura.util.LogUtil;
 import com.eaglesakura.util.ReflectionUtil;
 
 import java.io.ByteArrayInputStream;
@@ -33,7 +32,7 @@ public class PublicFieldDeserializer {
         } catch (SerializeException e) {
             throw e;
         } catch (Exception e) {
-            LogUtil.log(e);
+            e.printStackTrace();
         }
         return null;
     }
@@ -45,8 +44,7 @@ public class PublicFieldDeserializer {
             T[] values = (T[]) valuesMethod.invoke(clazz);
             return values[index];
         } catch (Exception e) {
-            LogUtil.log(e);
-            throw new CreateObjectFailedException();
+            throw new CreateObjectFailedException(e);
         }
     }
 

@@ -66,7 +66,7 @@ public class SerializeUtil {
 
             return result;
         } catch (Exception e) {
-            LogUtil.log(e);
+            e.printStackTrace();
             throw new IllegalArgumentException("FormatError");
         }
     }
@@ -117,7 +117,7 @@ public class SerializeUtil {
 
             return result;
         } catch (Exception e) {
-            LogUtil.log(e);
+            e.printStackTrace();
             throw new IllegalArgumentException("FormatError");
         }
     }
