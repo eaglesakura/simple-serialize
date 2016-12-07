@@ -2,6 +2,7 @@ package com.eaglesakura.serialize.internal;
 
 import com.eaglesakura.io.DataOutputStream;
 import com.eaglesakura.serialize.FieldEncoder;
+import com.eaglesakura.util.ReflectionUtil;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -85,7 +86,8 @@ public class PrimitiveFieldEncoder implements FieldEncoder {
                 stream.writeBuffer(buffer, 0, buffer.length);
             } else if (typeClass.equals(Boolean.class)) {
                 stream.writeBoolean((boolean) field.value);
-            } else if (typeClass.isEnum()) {
+            } else if (typeClass.isEnum() || ReflectionUtil.instanceOf(field.value, Enum.class)) {
+                // enum互換がある場合
                 short order = (short) ((Enum<?>) field.value).ordinal();
                 stream.writeS16(order);
             } else {
