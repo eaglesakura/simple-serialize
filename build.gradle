@@ -34,9 +34,9 @@ dependencies {
 
         testCompile project(':eglibrary:simple-logger')
     } else {
-        compile 'com.eaglesakura:simple-utils:1.+'
+        compile "com.eaglesakura:simple-utils:1.1.556"
 
-        testCompile 'com.eaglesakura:simple-logger:1.+'
+        testCompile "com.eaglesakura:simple-logger:1.2.449"
     }
 
     testCompile 'junit:junit:4.12'
@@ -78,19 +78,6 @@ uploadArchives {
             pom.version = ARTIFACT_VERSION + getArtifactVersionSuffix()
             pom.groupId = "com.eaglesakura"
             pom.artifactId = ARTIFACT_NAME
-        }
-    }
-}
-
-[uploadArchives.repositories.mavenDeployer]*.pom*.whenConfigured { pom ->
-    pom.project {
-        inceptionYear '2016'
-        packaging 'jar'
-        licenses {
-            license {
-                name 'MIT License'
-                url "https://raw.githubusercontent.com/eaglesakura/${ARTIFACT_NAME}/master/LICENSE.txt"
-            }
         }
     }
 }
