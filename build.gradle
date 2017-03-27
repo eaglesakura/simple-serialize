@@ -22,8 +22,8 @@ buildscript {
 }
 
 repositories {
-    maven { url "http://eaglesakura.github.io/maven/" }
     jcenter()
+    maven { url "https://dl.bintray.com/eaglesakura/maven/" }
 }
 apply plugin: 'java'
 
@@ -43,9 +43,9 @@ dependencies {
 
         testCompile project(':eglibrary:simple-logger')
     } else {
-        compile "com.eaglesakura:simple-utils:1.1.556"
+        compile "com.eaglesakura:simple-utils:1.2.562"
 
-        testCompile "com.eaglesakura:simple-logger:1.2.449"
+        testCompile "com.eaglesakura:simple-logger:1.3.460"
     }
 
     testCompile 'junit:junit:4.12'
