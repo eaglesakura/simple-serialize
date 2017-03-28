@@ -3,12 +3,12 @@ package com.eaglesakura.serialize;
 import com.eaglesakura.io.DataInputStream;
 import com.eaglesakura.io.DataOutputStream;
 import com.eaglesakura.io.Packet;
+import com.eaglesakura.log.Logger;
 import com.eaglesakura.serialize.error.FileFormatException;
 import com.eaglesakura.serialize.error.SerializeIdConflictException;
 import com.eaglesakura.serialize.internal.InternalSerializeUtil;
 import com.eaglesakura.serialize.internal.SerializeHeader;
 import com.eaglesakura.serialize.internal.SerializeTargetField;
-import com.eaglesakura.util.LogUtil;
 import com.eaglesakura.util.ReflectionUtil;
 import com.eaglesakura.util.SerializeUtil;
 
@@ -40,9 +40,8 @@ public class SerializerTest {
 
     public static <T> void assertSerialize(Class<T> clazz) throws Exception {
 
-        LogUtil.out("assertSerialize", "Serialize :: " + clazz.getName());
+        Logger.out(Logger.LEVEL_DEBUG, "assertSerialize", "Serialize :: " + clazz.getName());
         for (int i = 0; i < TRY_SERIALIZE_COUNT; ++i) {
-            Packet verifier = new Packet();
             T obj = ReflectionUtil.newInstanceOrNull(clazz);
 
             byte[] buffer = SerializeUtil.serializePublicFieldObject(obj, true);
@@ -50,7 +49,7 @@ public class SerializerTest {
             assertNotEquals(buffer.length, 0);
 
             // ベリファイコードを与える
-            byte[] packed = verifier.pack(buffer);
+            byte[] packed = Packet.encode(buffer);
             assertNotNull(packed);
             assertTrue(packed.length > buffer.length);
             // ベリファイコードの後ろ4桁が0x00でないことを検証する
@@ -58,10 +57,9 @@ public class SerializerTest {
             assertNotEquals(packed[(packed.length - 3)], 0x00);
             assertNotEquals(packed[(packed.length - 2)], 0x00);
             assertNotEquals(packed[(packed.length - 1)], 0x00);
-//            LogUtil.log("   num[%04d] hash(%s) verify(%s)", i, EncodeUtil.genMD5(buffer), StringUtil.toHexString(new byte[]{packed[(packed.length - 4)], packed[(packed.length - 3)], packed[(packed.length - 2)], packed[(packed.length - 1)]}));
 
             // ベリファイコードを剥がす
-            byte[] unpacked = verifier.unpack(packed);
+            byte[] unpacked = Packet.decode(packed);
             assertNotNull(unpacked);
             assertEquals(unpacked.length, buffer.length);
             assertTrue(Arrays.equals(buffer, unpacked));
@@ -70,7 +68,7 @@ public class SerializerTest {
             assertNotNull(deserialized);
             assertEquals(obj, deserialized);
         }
-        LogUtil.out("serialize", "  Finished");
+        Logger.out(Logger.LEVEL_DEBUG, "serialize", "  Finished");
     }
 
     @Test
@@ -104,7 +102,7 @@ public class SerializerTest {
         assertNotNull(bytes);
         assertNotEquals(bytes.length, 0);
 
-        LogUtil.log("Primitive Encode(%d bytes)", bytes.length);
+        Logger.out(Logger.LEVEL_DEBUG, "serialize", "Primitive Encode(%d bytes)", bytes.length);
 
         bytes[0] = 0x00;
 
@@ -119,7 +117,7 @@ public class SerializerTest {
         assertNotNull(bytes);
         assertNotEquals(bytes.length, 0);
 
-        LogUtil.out("serialize", "Primitive Encode(%d bytes)", bytes.length);
+        Logger.out(Logger.LEVEL_DEBUG, "serialize", "Primitive Encode(%d bytes)", bytes.length);
 
         bytes[4] = 0x12;
 
