@@ -7,6 +7,7 @@ import com.eaglesakura.serialize.internal.ObjectHeader;
 import com.eaglesakura.serialize.internal.PrimitiveFieldEncoder;
 import com.eaglesakura.serialize.internal.SerializeHeader;
 import com.eaglesakura.serialize.internal.SerializeTargetField;
+import com.eaglesakura.util.EncodeUtil;
 import com.eaglesakura.util.ReflectionUtil;
 
 import java.io.ByteArrayOutputStream;
@@ -108,4 +109,25 @@ public class PublicFieldSerializer {
             }
         }
     }
+
+    /**
+     * Public Fieldに@Serializeアノテーションを付与したオブジェクトをシリアライズする
+     *
+     * 圧縮はgzipで行うが、圧縮後のデータのほうが肥大化する場合(小さなデータに顕著)は、容量の小さいサイズを返す。
+     *
+     * そのため、compressにtrueを指定された場合はrawの場合とgzipの場合2種類のデータが返却される可能性がある。
+     *
+     * @param obj      シリアライズするオブジェクト
+     * @param compress データを圧縮する場合はtrue
+     * @return シリアライズされたデータ
+     */
+    public static byte[] serializeFrom(Object obj, boolean compress) throws SerializeException {
+        byte[] bytes = new PublicFieldSerializer().serialize(obj);
+        if (compress) {
+            return EncodeUtil.compressOrRaw(bytes);
+        } else {
+            return bytes;
+        }
+    }
+
 }

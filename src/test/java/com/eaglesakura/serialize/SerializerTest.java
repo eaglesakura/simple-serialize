@@ -44,7 +44,7 @@ public class SerializerTest {
         for (int i = 0; i < TRY_SERIALIZE_COUNT; ++i) {
             T obj = ReflectionUtil.newInstanceOrNull(clazz);
 
-            byte[] buffer = SerializeUtil.serializePublicFieldObject(obj, true);
+            byte[] buffer = PublicFieldSerializer.serializeFrom(obj, true);
             assertNotNull(buffer);
             assertNotEquals(buffer.length, 0);
 
@@ -64,7 +64,7 @@ public class SerializerTest {
             assertEquals(unpacked.length, buffer.length);
             assertTrue(Arrays.equals(buffer, unpacked));
 
-            Object deserialized = SerializeUtil.deserializePublicFieldObject(obj.getClass(), buffer);
+            Object deserialized = PublicFieldDeserializer.deserializeFrom(obj.getClass(), buffer);
             assertNotNull(deserialized);
             assertEquals(obj, deserialized);
         }

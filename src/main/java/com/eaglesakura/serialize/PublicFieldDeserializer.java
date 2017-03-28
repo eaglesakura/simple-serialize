@@ -7,6 +7,7 @@ import com.eaglesakura.serialize.internal.InternalSerializeUtil;
 import com.eaglesakura.serialize.internal.ObjectHeader;
 import com.eaglesakura.serialize.internal.SerializeHeader;
 import com.eaglesakura.serialize.internal.SerializeTargetField;
+import com.eaglesakura.util.EncodeUtil;
 import com.eaglesakura.util.ReflectionUtil;
 
 import java.io.ByteArrayInputStream;
@@ -118,5 +119,12 @@ public class PublicFieldDeserializer {
         } catch (Exception e) {
             return null;
         }
+    }
+
+    /**
+     * {@link PublicFieldSerializer} によってシリアライズされたオブジェクトをデシリアライズする。
+     */
+    public static <T> T deserializeFrom(Class<T> clazz, byte[] buffer) throws SerializeException {
+        return new PublicFieldDeserializer().deserialize(clazz, EncodeUtil.decompressOrRaw(buffer));
     }
 }
