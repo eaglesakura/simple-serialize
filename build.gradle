@@ -1,11 +1,7 @@
 /**
- * 1.0.0   : release
- * 1.0.1   : impl Disposable
- * 1.0.2   : read時の文字コードをUTF8固定に変更
- * 1.1.x   : 自動デプロイに移行
- * 1.2.x   : bintrayに移行
+ * 2.0.x   : ライブラリ名を変更
  */
-def ARTIFACT_VERSION = "1.2"
+def ARTIFACT_VERSION = "2.0"
 def REPOSITORY_NAME = "maven"
 def BINTRAY_LICENSES = ["MIT"]
 def BINTRAY_LABELS = ["android"]
