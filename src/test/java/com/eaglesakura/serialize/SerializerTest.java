@@ -2,7 +2,7 @@ package com.eaglesakura.serialize;
 
 import com.eaglesakura.io.DataInputStream;
 import com.eaglesakura.io.DataOutputStream;
-import com.eaglesakura.io.data.DataVerifier;
+import com.eaglesakura.io.Packet;
 import com.eaglesakura.serialize.error.FileFormatException;
 import com.eaglesakura.serialize.error.SerializeIdConflictException;
 import com.eaglesakura.serialize.internal.InternalSerializeUtil;
@@ -42,7 +42,7 @@ public class SerializerTest {
 
         LogUtil.out("assertSerialize", "Serialize :: " + clazz.getName());
         for (int i = 0; i < TRY_SERIALIZE_COUNT; ++i) {
-            DataVerifier verifier = new DataVerifier();
+            Packet verifier = new Packet();
             T obj = ReflectionUtil.newInstanceOrNull(clazz);
 
             byte[] buffer = SerializeUtil.serializePublicFieldObject(obj, true);
