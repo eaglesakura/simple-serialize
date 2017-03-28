@@ -43,9 +43,9 @@ dependencies {
 
         testCompile project(':eglibrary:simple-logger')
     } else {
-        compile "com.eaglesakura:java-commons:2.0.2"
+        compile "com.eaglesakura:java-commons:2.0.3"
 
-        testCompile "com.eaglesakura:simple-logger:1.3.460"
+        testCompile "com.eaglesakura:simple-logger:2.0.462"
     }
 
     testCompile 'junit:junit:4.12'
